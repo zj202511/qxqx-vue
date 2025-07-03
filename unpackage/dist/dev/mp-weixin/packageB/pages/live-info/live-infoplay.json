@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "直播详情",
+  "usingComponents": {
+    "imt-audio": "/components/imt-audio/imt-audio",
+    "emojy": "/packageB/emojy/emojy",
+    "uni-nav-bar": "/components/uni-ui/uni-nav-bar/uni-nav-bar"
+  }
+}

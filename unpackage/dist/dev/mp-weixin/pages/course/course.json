@@ -1,0 +1,7 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "course-list": "/components/common/course-list",
+    "uni-nav-bar": "/components/uni-ui/uni-nav-bar/uni-nav-bar"
+  }
+}

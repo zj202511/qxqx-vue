@@ -1,0 +1,10 @@
+(global["webpackJsonp"]=global["webpackJsonp"]||[]).push([["components/common/common-list"],{"2cbf":function(t,e,n){"use strict";(function(t){Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0;var n={props:{item:Object,index:{type:Number,default:-1},isdetail:{type:Boolean,default:!1}},methods:{openSpace:function(){t.navigateTo({url:"/pages/user-space/user-space"})},follow:function(){var t=this;this.checkAuth((function(){t.$emit("follow",t.index)}))},openDetail:function(){this.isdetail||t.navigateTo({url:"/pages/detail/detail?detail="+JSON.stringify(this.item)})},doSupport:function(t){var e=this;this.checkAuth((function(){e.$emit("doSupport",{type:t,index:e.index})}))},doComment:function(){var t=this;this.checkAuth((function(){if(!t.isdetail)return t.openDetail();t.$emit("doComment")}))},doShare:function(){if(!this.isdetail)return this.openDetail();this.$emit("doShare")}}};e.default=n}).call(this,n("df3c")["default"])},"5a6d":function(t,e,n){"use strict";n.d(e,"b",(function(){return i})),n.d(e,"c",(function(){return o})),n.d(e,"a",(function(){}));var i=function(){var t=this.$createElement;this._self._c},o=[]},"68b1":function(t,e,n){"use strict";n.r(e);var i=n("2cbf"),o=n.n(i);for(var u in i)["default"].indexOf(u)<0&&function(t){n.d(e,t,(function(){return i[t]}))}(u);e["default"]=o.a},b8cd:function(t,e,n){"use strict";var i=n("d694"),o=n.n(i);o.a},d588:function(t,e,n){"use strict";n.r(e);var i=n("5a6d"),o=n("68b1");for(var u in o)["default"].indexOf(u)<0&&function(t){n.d(e,t,(function(){return o[t]}))}(u);n("b8cd");var a=n("828b"),c=Object(a["a"])(o["default"],i["b"],i["c"],!1,null,null,null,!1,i["a"],void 0);e["default"]=c.exports},d694:function(t,e,n){}}]);
+;(global["webpackJsonp"] = global["webpackJsonp"] || []).push([
+    'components/common/common-list-create-component',
+    {
+        'components/common/common-list-create-component':(function(module, exports, __webpack_require__){
+            __webpack_require__('df3c')['createComponent'](__webpack_require__("d588"))
+        })
+    },
+    [['components/common/common-list-create-component']]
+]);
