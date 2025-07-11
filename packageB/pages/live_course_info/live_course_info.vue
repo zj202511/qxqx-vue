@@ -596,6 +596,9 @@
 						icon: 'none'
 					});
 				} else {
+					console.log('../live-info/live-infoplay?liveuid=' + liveInfo.uid +
+							'&courseid=' + liveInfo.id + '&lessonid=' + '0' + '&thumb=' + this.live_course_bg);
+							return;
 					uni.navigateTo({
 						url: '../live-info/live-infoplay?liveuid=' + liveInfo.uid +
 							'&courseid=' + liveInfo.id + '&lessonid=' + '0' + '&thumb=' + this.live_course_bg,

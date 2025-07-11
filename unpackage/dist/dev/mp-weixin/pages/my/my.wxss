@@ -227,6 +227,7 @@
 .name-id-wrap.login {
 	    width: 200%;
 		margin-right: 100rpx;
+		margin-top: 30rpx;
 }
 .id-wrap {
 		font-size: small;

@@ -15,7 +15,7 @@
 						placeholder-style="color:#C7C7C7; font-size:20rpx;" />
 				</view>
 			</view>
-			<view @click="shopcar" slot="right" style="position: relative; right: -30rpx;">
+			<view @click="shopcar" slot="right" style="position: relative; right: -30rpx; display: none;">
 				<view class="new_gouwuche">
 					<image class="gowucheimage" src="../../static/gouwuche.png" mode="aspectFit">
 					</image>

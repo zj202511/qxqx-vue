@@ -18,12 +18,11 @@
 		    <!-- <span>王晓理</span> -->
 			<view class="name-id-wrap login">
 			   <view v-if="userInfo.id != undefined">
-				
 				<text>{{userInfo.user_nickname}}</text>
 				<text class="id-wrap">ID:{{userInfo.id}}</text>
 				<view class="guan-wrap" @click="attenteacher">
-				 <text class="guanzhu-title">关注讲师 {{follows}}</text>
-			<!-- <text class="guanzhu-num"> {{follows}}</text> -->
+				<!-- <text class="guanzhu-title">关注讲师 {{follows}}</text>
+			 <text class="guanzhu-num"> {{follows}}</text> -->
 				</view>
 			   </view>
 			   <view v-else class="tx">
@@ -82,18 +81,19 @@
 		<view class="mybox_3">
 		  <ul style="list-style-type:none">
 		    <li><view @click="mykecheng"><img src="../../static/images/icon7.png"><p>分享内容</p></view></li>
+			<li><view @click="myrecord"><img src="../../static/images/icon4.png"><p>查看记录</p></view></li>
 		    <li><view @click="yijianfan"><img src="../../static/images/icon1.png"><p>意见反馈</p></view></li>
 		    <li><view @click="lianxiwe"><img src="../../static/images/icon2.png"><p>关于我们</p></view></li>
 		    <li><view @click="shezhi"><img src="../../static/images/icon5.png"><p>设置</p></view></li>
 		  </ul>
 		</view>
 		<!-- 广告位 -->
-		<view @click="guanggao" class="index-banner-wrap2">
+		<view @click="guanggao" class="index-banner-wrap2" style="display: none;">
 			
-			<image class="index-banner-img2"  src="../../static/images/huodong.png" mode="aspectFill"></image>
+		<!--	<image class="index-banner-img2"  src="../../static/images/huodong.png" mode="aspectFill"></image>-->
 					
 		</view>
-		<view class="animated fast fadeIn userinfo-list">
+		<view class="animated fast fadeIn userinfo-list" style="display: none;">
 			<view class="p-3">
 				<view v-for="(item,index) in list" class="my-item" @click="mylist(item.id,item.href)">
 					<image class="userinfo-icon-img" :src="item.thumb" mode="aspectFill"></image>
@@ -134,6 +134,12 @@
 		},
 
 		onLoad() {
+			if (app.globalData.userinfo == '') {
+				uni.navigateTo({
+					url: '../login/login'
+				})
+				return;
+			}
 			this.getinfo();
 		},
 		onShow() {
@@ -156,10 +162,15 @@
 					})
 					return;
 			},
-			
+			myrecord(){
+				uni.navigateTo({
+					url: '../hasbuy/hasbuy'
+				})
+				return;
+			},
 			mykecheng() {
 					uni.navigateTo({
-						url: '../course_class_list/course_class_list'
+						url: '../course/course'
 					})
 					return;
 			},
@@ -553,6 +564,7 @@
 	.name-id-wrap.login {
 	    width: 200%;
 		margin-right: 100rpx;
+		margin-top: 30rpx;
 	}
 
 	.id-wrap {

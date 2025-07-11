@@ -280,6 +280,9 @@
 	font-size: 18rpx;
 	color: #DBDBDB;
 }
+.content {
+  padding-bottom: 30px;
+}
 /* 课程内容 */
 .live-list-info {
 	float: left;
@@ -355,6 +358,28 @@
 	color: #323232;
 	width: auto;
 	margin-top: 22rpx;
+}
+.index-all-wrap {
+	width: 100%;
+	min-height: 100vh;
+	overflow: auto;
+	background-color: #fff;
+}
+.swiper-box {
+	width: 100%;
+	/* 设置默认高度防止为 0 */
+	height: 600rpx;
+}
+.scroll-container {
+  height: calc(100vh - 100rpx - 100rpx); /* navbar + tabbar */
+}
+.loading-more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20rpx 0;
+  font-size: 24rpx;
+  color: #666;
 }
 page {
 	background-color: #FFFFFF;

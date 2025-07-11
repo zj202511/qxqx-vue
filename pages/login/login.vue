@@ -1,5 +1,5 @@
 <template>
-	<view class="login-all-wrap">
+	<view class="login-all-wrap" style="display: none;">
 		<uni-status-bar></uni-status-bar>
 		<view class="top-wrap">
 			<!-- <template v-if="iswechat == 1"> -->
@@ -136,6 +136,8 @@
 			// #endif
 			// #ifndef MP-WEIXIN
 			// 获取登录方式开关
+			//this.wechatlogin();
+			return;
 			uni.request({
 				url: app.globalData.site_url + "Login.GetLoginType",
 				data: {},
@@ -155,6 +157,7 @@
 			// #endif
 		},
 		onLoad(option) {
+			this.wechatlogin();
 			if (option.page != '') {
 				this.jumpPage = option.page;
 			}
@@ -249,13 +252,13 @@
 
 			},
 			wechatlogin() {
-				if (this.agree == false) {
+				/*if (this.agree == false) {
 					uni.showToast({
 						title: '请阅读并同意相关协议',
 						icon: 'none'
 					});
 					return;
-				}
+				}*/
 
 				// #ifdef MP-WEIXIN
 				// 登录
@@ -379,7 +382,7 @@
 						});
 
 						setTimeout(function() {
-							let url = '../index/index';
+							let url = '../my/my';
 							let gData = app.globalData;
 							if (gData.login_jump.page != '') {
 								url = gData.login_jump.page;

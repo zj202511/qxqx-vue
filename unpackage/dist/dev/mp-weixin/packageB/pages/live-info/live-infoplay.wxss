@@ -3,14 +3,14 @@
 	width: 100%;
 	height: 100%;
 }
-.small-video{
+.small-video {
 	background-color: #333333;
 	width: 100%;
 	height: 150rpx;
 	display: flex;
 	flex-direction: row;
 }
-.video-small-text{
+.video-small-text {
 	color: #34D695;
 	text-align: center;
 	font-size: small;
@@ -18,10 +18,16 @@
 	line-height: 150rpx;
 	margin-left: 40rpx;
 }
-.video-small-wrap{
+.video-small-wrap {
 	width: 200rpx;
 	height: 150rpx;
 	background-color: #000000;
+}
+.video-element, .end-screen {
+  transition: opacity 0.5s;
+}
+.video-element[hidden], .end-screen[hidden] {
+  opacity: 0;
 }
 .big_swiper_item_image {
 	position: absolute;
@@ -144,15 +150,42 @@ page {
 	height: 400rpx;
 	background-color: #000000;
 }
-.video-share-wrap{
+.video-share-wrap {
 	width: 100%;
 	height: 400rpx;
 	background-color: #000000;
 }
+.page-container {
+	width: 100vw;
+	height: 100vh;
+	position: relative;
+	overflow: hidden;
+}
 .video-wrap {
 	width: 100%;
-	height: 400rpx;
-	background-color: #000000;
+	height: 100%;
+	position: relative;
+}
+.video-wrap video {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.black-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: black;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 9999;
+}
+.video-wrap  .wx-video-duration,
+.video-wrap  .wx-video-progress {
+  display: none !important;
 }
 .video-wrap36 {
 	width: 100%;
@@ -160,6 +193,17 @@ page {
 	display: flex;
 	/* 	position: absolute;
 	z-index: -1; */
+}
+.live-badge {
+  position: absolute;
+  top: 10rpx;
+  right: 10rpx;
+  background: #FF4D4F;
+  color: white;
+  padding: 4rpx 12rpx;
+  border-radius: 4rpx;
+  font-size: 24rpx;
+  z-index: 10;
 }
 .swpier {}
 .rounded {
@@ -290,7 +334,7 @@ page {
 	background-color: #2C62EF;
 	color: #FFFFFF;
 	text-align: left;
-	word-break:break-all;
+	word-break: break-all;
 }
 .ppt_big_back {
 	position: absolute;
@@ -299,7 +343,7 @@ page {
 	height: 40rpx;
 	margin-left: 20rpx;
 }
-.ppt_big_back_big{
+.ppt_big_back_big {
 	top: 20rpx;
 	position: absolute;
 	z-index: 1007;
@@ -307,6 +351,45 @@ page {
 	height: 150rpx;
 	/* margin-left: 20rpx; */
 	/* background-color: #0081FF; */
+}
+.video-container {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16/9; /* 关键比例控制 */
+  background-color: #000; /* 黑边填充 */
+}
+.video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 直播结束画面样式 */
+.end-screen {
+  position: absolute;
+  	top: 0;
+  	left: 0;
+  	width: 100%;
+  	height: 100%;
+  	background-color: black;
+  	display: flex;
+  	justify-content: center;
+  	align-items: center;
+  	z-index: 9999;
+}
+.end-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.end-text {
+  color: #ffffff;
+  font-size: 26px;
+  font-weight: bold;
+  text-align: center;
 }
 .big_pptnum {
 
@@ -331,7 +414,7 @@ page {
 	max-width: 450rpx;
 	background-color: #FFFFFF;
 	color: #000000;
-	word-break:break-all;
+	word-break: break-all;
 }
 .textmessage2_voice {
 	display: flex;
@@ -606,7 +689,7 @@ page {
 	text-align: center;
 	border-radius: 10rpx;
 }
-.voice_an_image2{
+.voice_an_image2 {
 	position: absolute;
 	width: 100rpx;
 	height: 100rpx;

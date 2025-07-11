@@ -7,8 +7,8 @@
 				<view class="small-video">
 					<!-- #ifdef MP-WEIXIN -->
 					<view class="video-small-wrap">
-						<live-player class="video-small-wrap" autoplay="true" id="player" src="wechatliveurl_small" mode="RTC"
-						 bindstatechange="playerStateChange" object-fit="contain" />
+						<live-player class="video-small-wrap" autoplay="true" id="player" src="wechatliveurl_small"
+							mode="RTC" bindstatechange="playerStateChange" object-fit="contain" />
 					</view>
 					<!-- #endif -->
 					<!-- #ifdef H5 -->
@@ -20,52 +20,61 @@
 				</view>
 			</template>
 			<!-- #ifdef H5 -->
-						<template v-if="showShareScreen == true">
-							<view class="video-share-wrap">
+			<template v-if="showShareScreen == true">
+				<view class="video-share-wrap">
+					<view id="remoteContainer" ref="remotecontainer">
+						<view id="subremoteContainer" class="video-share-wrap"></view>
+					</view>
+				</view>
+			</template>
+			<!-- #endif -->
+			<template v-if="livetype == 5 || livetype == 8">
+				<view class="video-wrap" v-if="showShareScreen == false">
+					<template v-if="phonetype == 1">
+						<TestText ref="videoAdnroid" tel="xxxxxx" class="video-wrap"></TestText>
+					</template>
+					<template v-else-if="phonetype == 2">
+						<dc-TestComponent ref="videoIos" appid="xxxxxx" class="video-wrap"></dc-TestComponent>
+					</template>
+					<template v-else-if="phonetype == 3">
+						<!-- #ifdef H5 -->
+						<template v-if="showBigScreen == true">
+							<view class="video-wrap">
 								<view id="remoteContainer" ref="remotecontainer">
-									<view id="subremoteContainer" class="video-share-wrap"></view>
+									<view id="subremoteContainer" class="video-wrap"></view>
 								</view>
 							</view>
 						</template>
 						<!-- #endif -->
-						<template v-if="livetype == 5 || livetype == 8">
-							<view class="video-wrap" v-if="showShareScreen == false">
-								<template v-if="phonetype == 1">
-									<TestText ref="videoAdnroid" tel="xxxxxx" class="video-wrap"></TestText>
-								</template>
-								<template v-else-if="phonetype == 2">
-									<dc-TestComponent ref="videoIos" appid="xxxxxx" class="video-wrap"></dc-TestComponent>
-								</template>
-								<template v-else-if="phonetype == 3">
-									<!-- #ifdef H5 -->
-									<template v-if="showBigScreen == true">
-										<view class="video-wrap">
-											<view id="remoteContainer" ref="remotecontainer">
-												<view id="subremoteContainer" class="video-wrap"></view>
-											</view>
-										</view>
-									</template>
-									<!-- #endif -->
-								</template>
-								<template v-else-if="phonetype == 4">
-									<!-- #ifdef MP-WEIXIN -->
-									<view v-show="video_zhezhao == true" class="video-wrap">
-										<live-player class="video-wrap-wechat" autoplay="true" id="player" src="wechatliveurl" mode="RTC"
-										 bindstatechange="playerStateChange" object-fit="contain" />
-									</view>
-									<!-- #endif -->
-								</template>
-								<view class="nothing" v-if="zhibo_leave == true">
-									<image v-if="show_nothing_image == true" class="nothing_image_H" src="../../static/zanshilikai.png" mode="aspectFit"></image>
-									<view v-if="show_nothing_image == true" class="zanshilikai_txt_H">{{zhibo_leave_text}}</view>
-									<view v-if="show_nothing_image == true" class="zanshilikai_txt_H_H">{{zhibo_leave_text_w}}</view>
-									<view v-if="show_nothing_image2 == true" class="zanshilikai_txt2_H">直播已结束</view>
-								</view>
-							</view>
-						</template>
+					</template>
+					<template v-else-if="phonetype == 4">
+						<!-- #ifdef MP-WEIXIN -->
+						<view v-show="video_zhezhao == true" class="video-wrap">
+							<live-player class="video-wrap-wechat" autoplay="true" id="player" src="wechatliveurl"
+								mode="RTC" bindstatechange="playerStateChange" object-fit="contain" />
+						</view>
+						<!-- #endif -->
+					</template>
+					<view class="nothing" v-if="zhibo_leave == true">
+						<image v-if="show_nothing_image == true" class="nothing_image_H"
+							src="../../static/zanshilikai.png" mode="aspectFit"></image>
+						<view v-if="show_nothing_image == true" class="zanshilikai_txt_H">{{zhibo_leave_text}}</view>
+						<view v-if="show_nothing_image == true" class="zanshilikai_txt_H_H">{{zhibo_leave_text_w}}
+						</view>
+						<view v-if="show_nothing_image2 == true" class="zanshilikai_txt2_H">直播已结束</view>
+					</view>
+				</view>
+			</template>
 			<template v-else-if="livetype == 2">
-				<view class="video-wrap">
-					<video show-mute-btn="true" class="video-wrap" :src="pull" :poster="thumb" controls="true" autoplay="true"></video>
+				<view class="page-container">
+					<view class="video-wrap">
+						<video v-show="!showEndScreen" id="liveVideo" class="video-element" :src="pull" :autoplay="true"
+							:controls="false" object-fit="cover" @ended="onVideoEnded" @error="onVideoError"></video>
+
+						<view v-if="showEndScreen" class="black-overlay">
+							<text class="end-text">直播已结束</text>
+						</view>
+					</view>
 				</view>
 			</template>
 			<template v-else-if="livetype == 3 || livetype == 6">
@@ -81,7 +90,8 @@
 				<template v-if="noppt == false">
 					<swiper class="video-wrap swiper-no-swiping" :current="pptindex">
 						<swiper-item v-for="(item,index) in ppts" :key="index" class="video-wrap" @touchmove.stop>
-							<image @click="showBigView(index)" :src="item.thumb" mode="aspectFit" class="pptimage"></image>
+							<image @click="showBigView(index)" :src="item.thumb" mode="aspectFit" class="pptimage">
+							</image>
 							<view class="pptnum">{{showppt_index +'/'+ppts.length}}</view>
 						</swiper-item>
 					</swiper>
@@ -102,17 +112,20 @@
 				<view class="xian"></view>
 				<view class="Usercount">{{Usercount + '人'}}</view>
 			</view>
-			<view style="background-color: #FFFFFF; height: 90rpx;" class="flex align-center justify-center font-weight-bold course-tab">
-				<view class="mx-5" @click="changeXXK(index)" v-for="(item, index) in tabBars" :key="index" :class="tabIndex === index ? 'text-main font-md' : 'font-md text-light-muted'">
+			<view style="background-color: #FFFFFF; height: 90rpx;display: none;"
+				class="flex align-center justify-center font-weight-bold course-tab">
+				<view class="mx-5" @click="changeXXK(index)" v-for="(item, index) in tabBars" :key="index"
+					:class="tabIndex === index ? 'text-main font-md' : 'font-md text-light-muted'">
 					{{item.name}}
 				</view>
 			</view>
-			<swiper class="swiper-box" :current="tabIndex" @change="onChangeTab" :style="{height : scrollH + 'rpx'}" style="width: 100%;background-color: #F4F5F6;">
+			<swiper class="swiper-box" :current="tabIndex" @change="onChangeTab" :style="{height : scrollH + 'rpx'}"
+				style="width: 100%;background-color: #F4F5F6;">
 				<swiper-item>
-					<scroll-view :style="{height : scrollH - 130+ 'rpx'}" class="scroll1" scroll-y="true" :scroll-into-view="scrollInto"
-					 scroll-with-animation style="position: absolute;left:0; top: 400; 
+					<scroll-view :style="{height : scrollH - 130+ 'rpx'}" class="scroll1" scroll-y="true"
+						:scroll-into-view="scrollInto" scroll-with-animation style="position: absolute;left:0; top: 400; 
 			        right: 0; bottom: 10rrpx;">
-						<view class="zhinanview">
+						<view class="zhinanview" style="display: none;">
 							<text class="zhinantext">听课指南</text>
 							<text class="intr">{{intr}}</text>
 						</view>
@@ -124,8 +137,10 @@
 										<text class="user_nickname">{{item.user_nickname}}</text>
 										<view class="jiangshi">讲师</view>
 									</view>
-									<rich-text v-show="item.type == 0" class="textmessage2" :nodes="item.content"></rich-text>
-									<view @click="open_voice(item.url,index)" v-show="item.type == 1" class="textmessage2_voice">
+									<rich-text v-show="item.type == 0" class="textmessage2"
+										:nodes="item.content"></rich-text>
+									<view @click="open_voice(item.url,index)" v-show="item.type == 1"
+										class="textmessage2_voice">
 										<image :ref="('voice_' + index)" :src="voice_list[index]" class="voice"></image>
 										<view class="voice_time">{{item.length + 's'}}</view>
 									</view>
@@ -137,8 +152,8 @@
 					</scroll-view>
 				</swiper-item>
 				<swiper-item>
-					<scroll-view :style="{height : scrollH - 130 + 'rpx'}" class="scroll1" scroll-y="true" :scroll-into-view="scrollInto"
-					 scroll-with-animation style="position: absolute;left:0; top: 400; 
+					<scroll-view :style="{height : scrollH - 130 + 'rpx'}" class="scroll1" scroll-y="true"
+						:scroll-into-view="scrollInto" scroll-with-animation style="position: absolute;left:0; top: 400; 
 			        right: 0; bottom: 10rrpx; ">
 						<block v-for="(item,index) in list" :key="index">
 							<template v-if="item.uid === myID">
@@ -146,9 +161,12 @@
 									<image :src="item.avatar" class="rounded2" mode="aspectFill"></image>
 									<view class="message">
 										<text class="user_nickname2">{{item.user_nickname}}</text>
-										<rich-text v-show="item.type == 0" class="textmessage" :nodes="item.content" space="nbsp"></rich-text>
-										<view @click="open_voice(item.url,index)" v-show="item.type == 1" class="textmessage2_voice_my_my">
-											<image :ref="('voice_' + index)" :src="voice_list[index]" class="voice_my"></image>
+										<rich-text v-show="item.type == 0" class="textmessage" :nodes="item.content"
+											space="nbsp"></rich-text>
+										<view @click="open_voice(item.url,index)" v-show="item.type == 1"
+											class="textmessage2_voice_my_my">
+											<image :ref="('voice_' + index)" :src="voice_list[index]" class="voice_my">
+											</image>
 											<view class="voice_time">{{item.length + 's'}}</view>
 										</view>
 									</view>
@@ -169,9 +187,12 @@
 										<template v-else>
 											<text class="user_nickname">{{item.user_nickname}}</text>
 										</template>
-										<rich-text v-show="item.type == 0" class="textmessage2" :nodes="item.content"></rich-text>
-										<view @click="open_voice(item.url,index)" v-show="item.type == 1" class="textmessage2_voice">
-											<image :ref="('voice_' + index)" :src="voice_list[index]" class="voice"></image>
+										<rich-text v-show="item.type == 0" class="textmessage2"
+											:nodes="item.content"></rich-text>
+										<view @click="open_voice(item.url,index)" v-show="item.type == 1"
+											class="textmessage2_voice">
+											<image :ref="('voice_' + index)" :src="voice_list[index]" class="voice">
+											</image>
 											<view class="voice_time">{{item.length + 's'}}</view>
 										</view>
 									</view>
@@ -183,8 +204,8 @@
 					</scroll-view>
 				</swiper-item>
 				<swiper-item>
-					<scroll-view :style="{height : scrollH + 'rpx'}" class="scroll1" scroll-y="true" :scroll-into-view="scrollInto"
-					 scroll-with-animation style="position: absolute;left:0; top: 400; 
+					<scroll-view :style="{height : scrollH + 'rpx'}" class="scroll1" scroll-y="true"
+						:scroll-into-view="scrollInto" scroll-with-animation style="position: absolute;left:0; top: 400; 
 				    right: 0; bottom: 10rrpx; ">
 						<block v-for="(item,index) in list" :key="index">
 							<template v-if="item.uid === myID">
@@ -192,9 +213,12 @@
 									<image :src="item.avatar" class="rounded2" mode="aspectFill"></image>
 									<view class="message">
 										<text class="user_nickname2">{{item.user_nickname}}</text>
-										<rich-text class="textmessage" :nodes="item.content" v-show="item.type == 0"></rich-text>
-										<view @click="open_voice(item.url,index)" v-show="item.type == 1" class="textmessage2_voice_my_my">
-											<image :ref="('voice_' + index)" :src="voice_list[index]" class="voice_my"></image>
+										<rich-text class="textmessage" :nodes="item.content"
+											v-show="item.type == 0"></rich-text>
+										<view @click="open_voice(item.url,index)" v-show="item.type == 1"
+											class="textmessage2_voice_my_my">
+											<image :ref="('voice_' + index)" :src="voice_list[index]" class="voice_my">
+											</image>
 											<view class="voice_time">{{item.length + 's'}}</view>
 										</view>
 									</view>
@@ -203,7 +227,8 @@
 								</view>
 							</template>
 							<template v-else>
-								<view v-if="item.status == '1' || item.status == '2'" :id="'chat' +index" class="messagebottom">
+								<view v-if="item.status == '1' || item.status == '2'" :id="'chat' +index"
+									class="messagebottom">
 									<image :src="item.avatar" class="rounded" mode="aspectFill"></image>
 									<view class="message">
 										<template v-if="item.user_type == 1 || liveInfo.liveuid == item.uid">
@@ -215,9 +240,12 @@
 										<template v-else>
 											<text class="user_nickname">{{item.user_nickname}}</text>
 										</template>
-										<rich-text v-show="item.type == 0" class="textmessage2" :nodes="item.content"></rich-text>
-										<view @click="open_voice(item.url,index)" v-show="item.type == 1" class="textmessage2_voice">
-											<image :ref="('voice_' + index)" :src="voice_list[index]" class="voice"></image>
+										<rich-text v-show="item.type == 0" class="textmessage2"
+											:nodes="item.content"></rich-text>
+										<view @click="open_voice(item.url,index)" v-show="item.type == 1"
+											class="textmessage2_voice">
+											<image :ref="('voice_' + index)" :src="voice_list[index]" class="voice">
+											</image>
 											<view class="voice_time">{{item.length + 's'}}</view>
 										</view>
 									</view>
@@ -236,42 +264,54 @@
 						<!-- #ifdef MP-WEIXIN -->
 						<image class="sendvoice" @click="sendvoice" :src="chat_voice"></image>
 						<!-- #endif -->
-						<view @touchstart.stop.prevent="startVoice" @touchmove.stop.prevent="moveVoice" @touchend.stop="endVoice"
-						 @touchcancel.stop="cancelVoice" class="inputborder" v-if="isvoice == true" style="color: #969696;text-align: center; line-height: 80rpx;">{{voiceTitle}}</view>
+						<view @touchstart.stop.prevent="startVoice" @touchmove.stop.prevent="moveVoice"
+							@touchend.stop="endVoice" @touchcancel.stop="cancelVoice" class="inputborder"
+							v-if="isvoice == true" style="color: #969696;text-align: center; line-height: 80rpx;">
+							{{voiceTitle}}
+						</view>
 						<view class="inputborder" v-if="isvoice == false">
-							<input :disabled="isshut == false ? false:true" :adjust-position="false" ref="input1" hold-keyboard='true'
-							 confirm-type="send" @keyup.enter='send' @confirm="send" v-model="content" class="input" :placeholder="shut_place" />
-							<view class="wen-btn-wrap">
+							<input :disabled="isshut == false ? false:true" :adjust-position="false" ref="input1"
+								hold-keyboard='true' confirm-type="send" @keyup.enter='send' @confirm="send"
+								v-model="content" class="input" :placeholder="shut_place" />
+							<view class="wen-btn-wrap" style="display: none;">
 								<view @click="question" class="duihao-wrap">
-									<image v-if="isQue == true" class="duihao-img" src="../../../static/jinyan_sel.png" mode="aspectFill"></image>
-									<image v-if="isQue == false" class="duihao-img" src="../../static/images/questionno.png" mode="aspectFill"></image>
+									<image v-if="isQue == true" class="duihao-img" src="../../../static/jinyan_sel.png"
+										mode="aspectFill"></image>
+									<image v-if="isQue == false" class="duihao-img"
+										src="../../static/images/questionno.png" mode="aspectFill"></image>
 								</view>
 								<text class="tiwen">提问</text>
 							</view>
 						</view>
 					</view>
 				</view>
-				<emojy v-show="showemojy == true" class='emojy' @songemojy='songemojy' @new_sendemojy='new_sendemojy'></emojy>
+				<emojy v-show="showemojy == true" class='emojy' @songemojy='songemojy' @new_sendemojy='new_sendemojy'>
+				</emojy>
 			</template>
-			<swiper :current="show_big_ppt_index2" v-show="show_big_ppt == true" class="big_swiper" @change="big_change">
+			<swiper :current="show_big_ppt_index2" v-show="show_big_ppt == true" class="big_swiper"
+				@change="big_change">
 				<swiper-item v-for="(item,index) in ppts" :key="index" class="big_swiper_item">
 					<image :src="item.thumb" mode="aspectFit" class="big_swiper_item_image"></image>
 					<view class="row">
 					</view>
 				</swiper-item>
 			</swiper>
-			<view v-show="show_big_ppt == true" :style="'top:' + system_ppt_top +'px;'" class="big_pptnum">{{show_big_ppt_index +'/'+ppts.length}}</view>
+			<view v-show="show_big_ppt == true" :style="'top:' + system_ppt_top +'px;'" class="big_pptnum">
+				{{show_big_ppt_index +'/'+ppts.length}}
+			</view>
 			<view v-show="show_big_ppt == true" @click="big_ppt_back" class="ppt_big_back_big"></view>
-			<image v-show="show_big_ppt == true" @click="big_ppt_back" :style="'top:' + system_ppt_top +'px;'" mode="aspectFit"
-			 class="ppt_big_back" src="../../static/navi_backImg_white@3x.png"></image>
+			<image v-show="show_big_ppt == true" @click="big_ppt_back" :style="'top:' + system_ppt_top +'px;'"
+				mode="aspectFit" class="ppt_big_back" src="../../static/navi_backImg_white@3x.png"></image>
 			<view class="voice_an" v-if="recording == true">
-				<image v-if="voiceimagestatus == false" class="voice_an_image" src="../../static/RecordCancel@2x.png" mode="aspectFit"></image>
+				<image v-if="voiceimagestatus == false" class="voice_an_image" src="../../static/RecordCancel@2x.png"
+					mode="aspectFit"></image>
 				<!-- <image  :animation="num==0?showpic:hidepic" v-if="voiceimagestatus == true" class="voice_an_image2" src="../../static/RecordingSignal001@2x.png" mode="aspectFit"></image>
 				<image  :animation="num==1?showpic:hidepic" v-if="voiceimagestatus == true" class="voice_an_image2" src="../../static/RecordingSignal002@2x.png" mode="aspectFit"></image>
 				<image  :animation="num==2?showpic:hidepic" v-if="voiceimagestatus == true" class="voice_an_image2" src="../../static/RecordingSignal003@2x.png" mode="aspectFit"></image>
 				<image  :animation="num==3?showpic:hidepic" v-if="voiceimagestatus == true" class="voice_an_image2" src="../../static/RecordingSignal004@2x.png" mode="aspectFit"></image>
 				<image  :animation="num==4?showpic:hidepic" v-if="voiceimagestatus == true" class="voice_an_image2" src="../../static/RecordingSignal005@2x.png" mode="aspectFit"></image> -->
-				<image v-if="voiceimagestatus == true" class="voice_an_image2" src="../../static/RecordingSignal006@2x.png" mode="aspectFit"></image>
+				<image v-if="voiceimagestatus == true" class="voice_an_image2"
+					src="../../static/RecordingSignal006@2x.png" mode="aspectFit"></image>
 				<view class="text">{{voiceIconText}}</view>
 			</view>
 		</view>
@@ -324,11 +364,7 @@
 				system_ppt_top: 0,
 				tabIndex: 0,
 				tabBars: [{
-					name: "讲师区"
-				}, {
 					name: "讨论区"
-				}, {
-					name: "问答区"
 				}],
 				scrollInto: "",
 				scrollTop: "",
@@ -400,7 +436,10 @@
 				isaudioerror: false,
 				showsmallvideo: false,
 				showShareScreen: false,
-				showBigScreen:true
+				showBigScreen: true,
+				showEndScreen: false,
+				watchDuration: 0, // 观看总时长（秒）
+				watchTimer: null, // 定时器句柄
 			}
 		},
 		onReady() {
@@ -411,7 +450,8 @@
 					that.scrollH = res.windowHeight * 750 / res.windowWidth - 540 - 100;
 					// #ifdef MP-WEIXIN
 					that.system_ppt_top = parseInt(res.safeArea.top) + 10;
-					that.scrollH = res.windowHeight * 750 / res.windowWidth - 550 - 124 - parseInt(res.safeArea.top) - 20;
+					that.scrollH = res.windowHeight * 750 / res.windowWidth - 550 - 124 - parseInt(res.safeArea
+						.top) - 20;
 					// #endif
 					that.liveLive(that.liveInfo.liveuid, that.liveInfo.courseid, that.liveInfo.lessonid);
 				}
@@ -419,11 +459,18 @@
 			// this.pageToBottom();
 		},
 		onUnload() {
+			this.submitWatchDuration();
+			this.stopWatchTimer();
 			this.chat_audio.stop();
 			socket.disconnect();
 			socket.close();
 		},
+		onHide(){
+			this.submitWatchDuration();
+			this.stopWatchTimer();
+		},
 		onLoad(option) {
+			this.saveCurrentUrl();
 			// #ifdef MP-WEIXIN
 			console.log("运行在小程序");
 			this.phonetype = 4;
@@ -511,8 +558,66 @@
 			});
 		},
 		methods: {
+			saveCurrentUrl() {
+				let pages = getCurrentPages();
+				let currentPage = pages[pages.length - 1];
+				let route = currentPage.route;
+				let options = currentPage.options;
+
+				let queryStr = Object.keys(options).map(k => `${k}=${options[k]}`).join('&');
+				let fullPath = '/' + route + (queryStr ? '?' + queryStr : '');
+
+				console.log('当前访问地址:', fullPath);
+				app.globalData.login_jump.page = fullPath;
+			},
 			stopPic() {
 				clearInterval(this.setInter1);
+			},
+			onVideoEnded() {
+
+				this.showEndScreen = true; // 延迟避免事件阻塞
+				this.stopWatchTimer();
+				console.log('视频播放完毕');
+				//	uni.hideLoading() // 隐藏可能的加载提示
+			},
+			tartWatchTimer() {
+				if (this.watchTimer) clearInterval(this.watchTimer);
+				this.watchDuration = 0;
+				this.watchTimer = setInterval(() => {
+					this.watchDuration += 1;
+				}, 1000);
+			},
+			stopWatchTimer() {
+				if (this.watchTimer) {
+					clearInterval(this.watchTimer);
+					this.watchTimer = null;
+				}
+			},
+			submitWatchDuration() {
+				const gData = getApp().globalData;
+				// 若时长为0，跳过提交
+				if (this.watchDuration === 0){
+					console.warn('观看时长:', this.watchDuration);
+					return;
+				}
+				uni.request({
+					url: gData.site_url + 'Live.SubmitWatchDuration', // ✅ 你需要确认这个接口名
+					method: 'POST',
+					data: {
+						uid: gData.userinfo.id,
+						token: gData.userinfo.token,
+						liveuid: this.liveInfo.liveuid,
+						courseid: this.liveInfo.courseid,
+						lessonid: this.liveInfo.lessonid,
+						duration: this.watchDuration
+					},
+					success: res => {
+						console.log('✅ 观看时长提交成功:', this.watchDuration + '秒');
+					},
+					fail: err => {
+						console.warn('❌ 观看时长提交失败:', err);
+					}
+				});
 			},
 			changePic() { //轮播方法
 				clearInterval(this.setInter1);
@@ -522,24 +627,22 @@
 					delay: 0,
 				});
 				this.animation = animation;
-				this.setInter1 = setInterval(function() { //循环
+				this.setInter1 = setInterval(() => {
 					this.num++;
 					if (this.num == this.picmaxnum) {
 						this.num = 0;
 					}
-					//淡入
 					animation.opacity(1).step({
 						duration: 3000,
 						delay: 1000
-					}) //描述动画
-					this.showpic = animation.export() //输出动画
-					//淡出
+					});
+					this.showpic = animation.export();
 					animation.opacity(0).step({
 						duration: 3000,
 						delay: 1000
-					})
-					this.hidepic = animation.export()
-				}, 4000)
+					});
+					this.hidepic = animation.export();
+				}, 4000);
 			},
 			//准备开始录音
 			startVoice(e) {
@@ -672,12 +775,12 @@
 				var name = 'voice_knowledge' + this.getTime() + '.wav';
 				qiniuUploader.upload(tempFilePath, res => {
 					// if (res.fileUrl.indexOf("undefined") != -1) {
-						// console.log('上传成功，但url含 undefined');
-						// uni.showToast({
-						// 	title: '出现错误，请重新录制语音',
-						// 	icon: 'none'
-						// });
-						// return;
+					// console.log('上传成功，但url含 undefined');
+					// uni.showToast({
+					// 	title: '出现错误，请重新录制语音',
+					// 	icon: 'none'
+					// });
+					// return;
 					// }
 					// console.log('上传成功');
 					// console.log(res);
@@ -792,7 +895,8 @@
 					uid: this.userInfo.id, //进入该房间的学生id 假如等于下面的房间id, 那即为老师进入房间
 					roomnum: this.liveInfo.liveuid, //房间号,即老师id
 					nickname: this.userInfo.user_nickname,
-					stream: this.liveInfo.liveuid + '_' + this.liveInfo.courseid + '_' + this.liveInfo.lessonid, //老师id_课程id_课时id
+					stream: this.liveInfo.liveuid + '_' + this.liveInfo.courseid + '_' + this.liveInfo
+						.lessonid, //老师id_课程id_课时id
 					token: this.userInfo.token,
 				});
 				socket.on('error', (data) => {
@@ -947,7 +1051,8 @@
 										for (let i = 0; i < emojiArray.length; i++) {
 											var path = getApp().globalData.biaoqingurl + pinyinArray[i];
 											content = content.replace(emojiArray[i],
-												'<img style="width: 25px; height: 25px; vertical-align: middle;" src ="' + path + '"/>'
+												'<img style="width: 25px; height: 25px; vertical-align: middle;" src ="' +
+												path + '"/>'
 											);
 										}
 									}
@@ -1020,6 +1125,7 @@
 						var pinyinArray = getApp().globalData.pinyinArray;
 						var emojiArray = getApp().globalData.emojiArray;
 						this.list = res.data.data.info;
+						this.tartWatchTimer();
 						for (let j = 0; j < this.list.length; j++) {
 							var msg = this.list[j];
 							var content = msg.content;
@@ -1028,7 +1134,8 @@
 									for (let i = 0; i < emojiArray.length; i++) {
 										var path = getApp().globalData.biaoqingurl + pinyinArray[i];
 										content = content.replace(emojiArray[i],
-											'<img style="width: 25px; height: 25px; vertical-align: middle;" src ="' + path + '"/>'
+											'<img style="width: 25px; height: 25px; vertical-align: middle;" src ="' +
+											path + '"/>'
 										);
 									}
 								}
@@ -1238,9 +1345,9 @@
 							this.Usercount = parseInt(res.data.data.info[0].nums);
 							this.agoraappid = res.data.data.info[0].sound_appid;
 							this.agoramRoomName = res.data.data.info[0].stream;
-							
+
 							if (this.livetype == 5 || this.livetype == 8) {
-								if  (this.livemode == 0){
+								if (this.livemode == 0) {
 									console.log('直播模式');
 									this.livetype = 5;
 									this.fromPPt = false;
@@ -1250,7 +1357,7 @@
 									this.showBigScreen = true;
 									this.showShareScreen = false;
 									// #endif
-								}else if (this.livemode == 1){
+								} else if (this.livemode == 1) {
 									console.log('PPt模式');
 									this.livetype = 4;
 									this.fromPPt = true;
@@ -1261,7 +1368,7 @@
 									this.showBigScreen = false;
 									this.showShareScreen = false;
 									// #endif
-								}else if (this.livemode == 2){
+								} else if (this.livemode == 2) {
 									console.log('屏幕共享模式');
 									this.livetype = 8;
 									this.fromshare = true;
@@ -1285,7 +1392,8 @@
 									setTimeout(() => {
 										this.$nextTick(() => {
 											this.$refs.videoAdnroid.clearTel(
-												this.agoraappid + '声' + this.agoramRoomName + '网' + gData.userinfo.id
+												this.agoraappid + '声' + this
+												.agoramRoomName + '网' + gData.userinfo.id
 											);
 										});
 									}, 0);
@@ -1294,8 +1402,8 @@
 								} else if (this.phonetype == 4) {
 									this.agoraWechat(this.agoraappid, this.agoramRoomName, gData.userinfo.id)
 								}
-							}	
-							
+							}
+
 						} else {
 							uni.showToast({
 								title: res.data.data.msg,
@@ -1401,7 +1509,8 @@
 									"url": this.voice_url,
 									"length": this.voice_length,
 									"equipment": "app",
-									"create_time": Math.floor((new Date()).getTime().toString() / 1000),
+									"create_time": Math.floor((new Date()).getTime().toString() /
+										1000),
 									"msgtype": 2,
 									"status": status,
 									"type": this.voice_url.length > 1 ? '1' : '0',

@@ -3,7 +3,7 @@
 		<uni-nav-bar status-bar="true" :border="false">
 			<view slot="left">
 				<view class="check_class">
-					<text>情创未来</text>
+					<text>情弦趣享</text>
 				</view>
 			</view>
 			<view class="search-all-wrap">
@@ -13,7 +13,7 @@
 						placeholder-style="color:#C7C7C7; font-size:20rpx;" />
 				</view>
 			</view>
-			<view @click="shopcar" slot="right" style="position: relative; right: -30rpx;">
+			<view @click="shopcar" slot="right" style="position: relative; right: -30rpx;display: none;">
 				<view class="new_gouwuche">
 					<image class="gowucheimage" src="../../static/gouwuche.png" mode="aspectFit"></image>
 					<template v-if="nums != 0">
@@ -25,7 +25,7 @@
 			</view>
 		</uni-nav-bar>
 
-		<view style="background-color: #FFFFFF;height: 130rpx; " class="course-abs-wrap">
+		<view style="background-color: #FFFFFF;height: 50rpx; " class="course-abs-wrap">
 			<view class="flex align-center font-weight-bold course-tab">
 				<scroll-view class="scroll-view_H" scroll-x="true" scroll-left="10" :scroll-into-view="currentScrollId">
 					<view class="courseclass-tab-item" :id="'scroll_item' + index" @click="changeTab(index, item.id)"
@@ -46,77 +46,54 @@
 				</view>
 			</view>
 		</view>
+		<scroll-view class="scroll-container" scroll-y="true" @scrolltolower="loadMoreData">
+			<view class="content">
+				<view class="live-list" v-for="(item, index) in list" :key="item.id">
+					<view class="live-list-img-wrap">
+						<image class="live-list-img" :src="item.thumb" mode="aspectFill"></image>
+						<text class="course-title-icon" v-if="item.sort === 0">内容</text>
+						<text class="course-title-icon" v-else-if="item.sort === 1">课程</text>
+						<text class="course-title-icon" v-else>直播</text>
+					</view>
 
-		<scroll-view class="index-all-wrap">
-			<block v-if="userInfo != ''">
-				<swiper scroll-y="true" :current="subTabIndex" class="swiper-box" :style="{height:scrollH+'rpx'}"
-					@change="onChangeTab">
-
-					<view class="live-list" v-for="(item, index) in list" :key="item.id">
-						<view class="live-list-img-wrap">
-							<image class="live-list-img" :src="item.thumb" mode="aspectFill"></image>
-							<template v-if="item.sort == 0">
-								<text class="course-title-icon">内容</text>
-							</template>
-							<template v-else-if="item.sort == 1">
-								<text class="course-title-icon">课程</text>
-							</template>
-							<template v-else>
-								<text class="course-title-icon">直播</text>
-							</template>
+					<view class="live-list-info">
+						<view class="live-c-title">{{ item.name }}</view>
+						<view v-if="item.sort === 0"
+							:class="item.islive == 1 ? 'live-status living-status' : 'live-status-tuwen'">
+							{{ item.lesson }}
+						</view>
+						<view v-else :class="item.islive == 1 ? 'live-status living-status' : 'live-status'">
+							{{ item.lesson }}
 						</view>
 
-						<view class="live-list-info">
-							<view class="live-c-title">{{item.name}}</view>
-							<template v-if="item.sort == 0">
-								<view class="live-status living-status" v-if="item.islive == 1">
-									{{item.lesson}}
-								</view>
-								<view class="live-status-tuwen" v-else>
-									{{item.lesson}}
-								</view>
-							</template>
-							<template v-else>
-								<view class="live-status living-status" v-if="item.islive == 1">
-									{{item.lesson}}
-								</view>
-								<view class="live-status" v-else>
-									{{item.lesson}}
-								</view>
-							</template>
-							<view class="live-teacher-price">
-								<image class="live-teacher-avatar" :src="item.avatar" mode="aspectFill"></image>
-								<text class="teacher-name">{{item.user_nickname}}</text>
-								<view class="price-wrap">
-									<button 
-									  open-type="share" 
-									  class="share-button"
-									  @tap="shareCourse(item)"
-									>
-									  <text class="iconfont icon-fenxiang"></text>
-									  <text>分享</text>
-									</button>
-								</view>
+						<view class="live-teacher-price">
+							<image class="live-teacher-avatar" :src="item.avatar" mode="aspectFill"></image>
+							<text class="teacher-name">{{ item.user_nickname }}</text>
+							<view class="price-wrap">
+								<button open-type="share" class="share-button" @tap="shareCourse(item)">
+									<text class="iconfont icon-fenxiang"></text>
+									<text>分享</text>
+								</button>
 							</view>
 						</view>
 					</view>
-
-				</swiper>
-
-				<template v-if="kongkong == true">
-					<view :class="{xiangziwrap : (kongkong == true)}">
-						<image class="xiangzi" src="../../static/images/xiangzi.png" mode="aspectFill"></image>
-						<text class="xiangzi_txt">暂无视频</text>
-					</view>
-				</template>
-			</block>
-			<block v-else>
-				<view class="no-login-wrap">
-					<text class="no-login-txt">登录后可查看详细内容</text>
-					<text @click="openLogin" class="no-login-btn">立即登录</text>
 				</view>
-			</block>
+			</view>
+
+			<!-- 空态 -->
+			<view v-if="kongkong" class="xiangziwrap">
+				<image class="xiangzi" src="../../static/images/xiangzi.png" mode="aspectFill"></image>
+				<text class="xiangzi_txt">暂无视频</text>
+			</view>
+
+			<!-- 加载更多 -->
+
+			<view v-if="loadingMore" class="loading-more">加载中...</view>
+			<view :style="{ height: (80 + scrollH) + 'rpx' }">
+				  <text>&nbsp;</text>
+			</view>
 		</scroll-view>
+
 	</view>
 </template>
 
@@ -151,7 +128,8 @@
 				tabBarsCourse: [],
 				scroll_left: 10,
 				currentScrollId: '',
-				currentShareItem: null
+				currentShareItem: null,
+				loadingMore: false
 			}
 		},
 		onShow() {
@@ -164,7 +142,6 @@
 			this.getnums();
 		},
 		onLoad() {
-			console.log(app.globalData.userinfo)
 			if (app.globalData.userinfo != '') {
 				this.userInfo = app.globalData.userinfo;
 			}
@@ -176,10 +153,23 @@
 			initPageHeight() {
 				uni.getSystemInfo({
 					success: (res) => {
-						this.scrollH = res.windowHeight - res.statusBarHeight - 44;
+					  this.scrollH = res.safeAreaInsets ? res.safeAreaInsets.bottom : 0;
 					}
 				});
 			},
+			loadMoreData() {
+				if (this.loadingMore) return; // 避免重复加载
+				this.loadingMore = true;
+
+				// 模拟加载
+				setTimeout(() => {
+					// 加数据
+					// this.list.push(...新数据);
+
+					this.loadingMore = false;
+				}, 1000);
+			},
+
 			openLogin() {
 				uni.navigateTo({
 					url: '../login/login'
@@ -231,6 +221,7 @@
 						} else {
 							this.kongkong = true;
 						}
+
 					},
 				});
 			},
@@ -337,27 +328,17 @@
 				});
 			},
 			onShareAppMessage(res) {
-				
+
 				if (res.from === 'button' && this.currentShareItem) {
 					let path = '';
-					switch (this.currentShareItem.sort) {
-						case 0:
-							path = `packageB/pages/content-info/content-info?courseid=${this.currentShareItem.id}`;
-							break;
-						case 1:
-							path = `packageB/pages/courseinfo/courseinfo?courseid=${this.currentShareItem.id}`;
-							break;
-						default:
-							path =
-								`packageB/pages/live_course_info/live_course_info?courseid=${this.currentShareItem.id}`;
-					}
-
+					path = `packageB/pages/live_course_info/live_course_info?courseid=${this.currentShareItem.id}`;
+					path = `packageB/pages/live-info/live-infoplay?liveuid=${this.currentShareItem.uid}&courseid=${this.currentShareItem.id}&lessonid=0&thumb=${this.currentShareItem.thumb}`;
 					return {
-						title: `${this.currentShareItem.name} - 推荐给你`,
+						title: `${this.currentShareItem.name} - 情弦趣享`,
 						path: `${path}&from=share`,
 						imageUrl: this.currentShareItem.thumb || '/static/share-default.jpg',
 						success: () => {
-							this.logShare(this.currentShareItem.id);
+						//	this.logShare(this.currentShareItem.id);
 							uni.showToast({
 								title: '分享成功',
 								icon: 'success'
@@ -370,15 +351,15 @@
 					};
 				}
 				return {
-					title: '优质课程推荐 - 情创未来',
-					path: '/pages/index/index',
+					title: '${this.currentShareItem.name} - 情弦趣享',
+					path: '/pages/my/my',
 					imageUrl: '/static/share-default.jpg'
 				};
 			},
 			onShareTimeline() {
 				if (!this.currentShareItem) {
 					return {
-						title: '优质课程推荐 - 情创未来',
+						title: '${this.currentShareItem.name} - 情弦趣享',
 						query: '',
 						imageUrl: '/static/share-default.jpg'
 					};

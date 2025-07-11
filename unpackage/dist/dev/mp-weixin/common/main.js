@@ -29,13 +29,13 @@ _vue.default.config.productionTip = false;
 // 引入全局组件
 var divider = function divider() {
   __webpack_require__.e(/*! require.ensure | components/common/divider */ "components/common/divider").then((function () {
-    return resolve(__webpack_require__(/*! ./components/common/divider.vue */ 383));
+    return resolve(__webpack_require__(/*! ./components/common/divider.vue */ 381));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 _vue.default.component('divider', divider);
 var noThing = function noThing() {
   __webpack_require__.e(/*! require.ensure | components/common/no-thing */ "components/common/no-thing").then((function () {
-    return resolve(__webpack_require__(/*! ./components/common/no-thing.vue */ 388));
+    return resolve(__webpack_require__(/*! ./components/common/no-thing.vue */ 386));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 _vue.default.component('no-thing', noThing);
