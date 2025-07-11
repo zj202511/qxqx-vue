@@ -715,6 +715,11 @@ var _default = {
     this.saveCurrentUrl();
     console.log("运行在小程序");
     this.phonetype = 4;
+    if (app.globalData.userinfo == '') {
+      uni.navigateTo({
+        url: '../../../pages/login/login'
+      });
+    }
     this.ppts = [];
     this.userInfo = app.globalData.userinfo;
     this.liveInfo.liveuid = option.liveuid;

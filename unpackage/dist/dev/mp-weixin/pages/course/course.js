@@ -384,6 +384,7 @@ var _default = {
         var path = '';
         path = "packageB/pages/live_course_info/live_course_info?courseid=".concat(this.currentShareItem.id);
         path = "packageB/pages/live-info/live-infoplay?liveuid=".concat(this.currentShareItem.uid, "&courseid=").concat(this.currentShareItem.id, "&lessonid=0&thumb=").concat(this.currentShareItem.thumb);
+        console.log(path);
         return {
           title: "".concat(this.currentShareItem.name, " - \u60C5\u5F26\u8DA3\u4EAB"),
           path: "".concat(path, "&from=share"),

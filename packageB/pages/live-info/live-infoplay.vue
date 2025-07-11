@@ -465,7 +465,7 @@
 			socket.disconnect();
 			socket.close();
 		},
-		onHide(){
+		onHide() {
 			this.submitWatchDuration();
 			this.stopWatchTimer();
 		},
@@ -475,6 +475,7 @@
 			console.log("运行在小程序");
 			this.phonetype = 4;
 			// #endif
+
 			// #ifdef H5
 			console.log("运行在H5");
 			this.phonetype = 3;
@@ -488,6 +489,12 @@
 				// console.log("运行在ios");
 			}
 			// #endif
+
+			if (app.globalData.userinfo == '') {
+				uni.navigateTo({
+					url: '../../../pages/login/login'
+				});
+			}
 			this.ppts = [];
 			this.userInfo = app.globalData.userinfo;
 			this.liveInfo.liveuid = option.liveuid;
@@ -596,7 +603,7 @@
 			submitWatchDuration() {
 				const gData = getApp().globalData;
 				// 若时长为0，跳过提交
-				if (this.watchDuration === 0){
+				if (this.watchDuration === 0) {
 					console.warn('观看时长:', this.watchDuration);
 					return;
 				}

@@ -333,6 +333,7 @@
 					let path = '';
 					path = `packageB/pages/live_course_info/live_course_info?courseid=${this.currentShareItem.id}`;
 					path = `packageB/pages/live-info/live-infoplay?liveuid=${this.currentShareItem.uid}&courseid=${this.currentShareItem.id}&lessonid=0&thumb=${this.currentShareItem.thumb}`;
+				console.log(path);
 					return {
 						title: `${this.currentShareItem.name} - 情弦趣享`,
 						path: `${path}&from=share`,
