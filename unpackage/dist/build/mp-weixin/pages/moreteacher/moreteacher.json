@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "相关老师",
-  "usingComponents": {
-    "uni-nav-bar": "/components/uni-ui/uni-nav-bar/uni-nav-bar"
-  }
-}

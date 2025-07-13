@@ -1,8 +1,0 @@
-{
-  "navigationStyle": "custom",
-  "usingComponents": {
-    "swiper-tab-head": "/components/common/swiper-tab-head",
-    "uni-popup": "/components/uni-ui/uni-popup/uni-popup",
-    "uni-nav-bar": "/components/uni-ui/uni-nav-bar/uni-nav-bar"
-  }
-}

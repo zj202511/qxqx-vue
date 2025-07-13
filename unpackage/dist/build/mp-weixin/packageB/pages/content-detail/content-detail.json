@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "内容详情",
-  "usingComponents": {
-    "imt-audio": "/components/imt-audio/imt-audio"
-  }
-}

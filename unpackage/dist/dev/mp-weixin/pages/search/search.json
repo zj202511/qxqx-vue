@@ -1,7 +1,0 @@
-{
-  "navigationStyle": "custom",
-  "usingComponents": {
-    "common-list": "/components/common/common-list",
-    "user-list": "/components/user-list/user-list"
-  }
-}
