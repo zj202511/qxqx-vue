@@ -11346,7 +11346,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _default = {
   //api请求前缀
-  webUrl: 'https://eu.ms1688.site/api/v1',
+  webUrl: 'https://api.qcwl88.com/api/v1',
   //websocket地址
   websocketUrl: ''
 };
