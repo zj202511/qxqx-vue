@@ -1,16 +1,15 @@
 <template>
 	<view class="page">
-		<uni-nav-bar status-bar="true" :border="false">
-			<view slot="left">
-				<view class="check_class">
-					<text>情弦趣享</text>
-				</view>
-			</view>
+		<!-- <uni-nav-bar status-bar="true" :border="false">
+			
+		</uni-nav-bar> -->
+
+		<view class="header-row">
 			<view class="search-all-wrap">
 				<view class="search-wrap" @click="search">
 					<text class="iconfont icon-faxianchaxun"></text>
 					<input disabled="true" class="uni-input" placeholder="搜索视频"
-						placeholder-style="color:#C7C7C7; font-size:20rpx;" />
+						placeholder-style="color:#C7C7C7; font-size:28rpx;" />
 				</view>
 			</view>
 			<view @click="shopcar" slot="right" style="position: relative; right: -30rpx;display: none;">
@@ -23,7 +22,7 @@
 					</template>
 				</view>
 			</view>
-		</uni-nav-bar>
+		</view>
 
 		<view style="background-color: #FFFFFF;height: 50rpx; " class="course-abs-wrap">
 			<view class="flex align-center font-weight-bold course-tab">
@@ -90,7 +89,7 @@
 
 			<view v-if="loadingMore" class="loading-more">加载中...</view>
 			<view :style="{ height: (80 + scrollH) + 'rpx' }">
-				  <text>&nbsp;</text>
+				<text>&nbsp;</text>
 			</view>
 		</scroll-view>
 
@@ -153,7 +152,7 @@
 			initPageHeight() {
 				uni.getSystemInfo({
 					success: (res) => {
-					  this.scrollH = res.safeAreaInsets ? res.safeAreaInsets.bottom : 0;
+						this.scrollH = res.safeAreaInsets ? res.safeAreaInsets.bottom : 0;
 					}
 				});
 			},
@@ -332,14 +331,14 @@
 				if (res.from === 'button' && this.currentShareItem) {
 					let path = '';
 					path = `packageB/pages/live_course_info/live_course_info?courseid=${this.currentShareItem.id}`;
-					path = `packageB/pages/live-info/live-infoplay?liveuid=${this.currentShareItem.uid}&courseid=${this.currentShareItem.id}&lessonid=0&thumb=${this.currentShareItem.thumb}`;
-				console.log(path);
+					path =
+						`packageB/pages/live-info/live-infoplay?liveuid=${this.currentShareItem.uid}&courseid=${this.currentShareItem.id}&lessonid=0&thumb=${this.currentShareItem.thumb}`;
 					return {
 						title: `${this.currentShareItem.name} - 情弦趣享`,
 						path: `${path}&from=share`,
 						imageUrl: this.currentShareItem.thumb || '/static/share-default.jpg',
 						success: () => {
-						//	this.logShare(this.currentShareItem.id);
+							//	this.logShare(this.currentShareItem.id);
 							uni.showToast({
 								title: '分享成功',
 								icon: 'success'
@@ -403,14 +402,6 @@
 		margin: 0 auto;
 	}
 
-	.check_class {
-		color: #2C62EF !important;
-		font-size: 34rpx;
-		font-weight: bold;
-		display: inline-block;
-		width: 230rpx;
-	}
-
 	/deep/ .uni-navbar--fixed {
 		width: 96%;
 		height: 100rpx;
@@ -439,41 +430,37 @@
 	}
 
 	.search-all-wrap {
-		position: absolute;
-		margin-top: 0rpx;
-		right: 130rpx;
-		left: 220rpx;
-		width: 400rpx;
-		height: 48rpx;
-	}
+    width: 90vw;
+    margin: 30rpx auto 0 auto;
+    height: 56rpx; // 高度可根据需要调整
+    display: flex;
+    align-items: center;
+}
 
-	.search-wrap {
-		width: 100%;
-		height: 100%;
-		line-height: 48rpx;
-		border-radius: 30rpx;
-		margin-left: 20rpx;
-		padding-left: 20rpx;
-		background-color: #F5F5F5;
-		float: left;
-	}
+.search-wrap {
+    width: 100%;
+    height: 100%;
+    border-radius: 28rpx;
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    padding-left: 20rpx;
+}
 
-	.search-wrap text,
-	.search-wrap input {
-		float: left;
-		background-color: #F5F5F5;
-		height: 100%;
-		padding: 0;
-	}
+.search-wrap text {
+    margin-right: 18rpx;
+    color: #C7C7C7;
+    font-size: 32rpx;
+}
 
-	.search-wrap text {
-		margin-right: 20rpx;
-		color: #C7C7C7;
-	}
-
-	.search-wrap input {
-		width: 70%;
-	}
+.search-wrap input {
+    width: 90%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    font-size: 28rpx;
+    color: #333;
+}
 
 	.new_gouwuche {
 		position: relative;
@@ -626,15 +613,15 @@
 	}
 
 	.courseclass-tab-item {
-		width: 120rpx;
-		height: 54rpx;
-		line-height: 54rpx;
-		margin-right: 20rpx;
+		width: 180rpx;
+		height: 70rpx;
+		line-height: 70rpx;
+		margin-right: 28rpx;
 		display: inline-block;
-		border-radius: 30rpx;
+		border-radius: 35rpx;
 		text-align: center;
 		background-color: #F5F5F5;
-		font-size: 20rpx;
+		font-size: 32rpx;
 	}
 
 	/* 课程分类标签样式 */

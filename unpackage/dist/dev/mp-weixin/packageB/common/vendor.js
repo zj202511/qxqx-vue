@@ -1,6 +1,6 @@
 (global["webpackJsonp"] = global["webpackJsonp"] || []).push([["packageB/common/vendor"],{
 
-/***/ 341:
+/***/ 336:
 /*!************************************************************************************************!*\
   !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/@babel/runtime/regenerator/index.js ***!
   \************************************************************************************************/
@@ -9,12 +9,12 @@
 
 // TODO(Babel 8): Remove this file.
 
-var runtime = __webpack_require__(/*! @babel/runtime/helpers/regeneratorRuntime */ 342)();
+var runtime = __webpack_require__(/*! @babel/runtime/helpers/regeneratorRuntime */ 337)();
 module.exports = runtime;
 
 /***/ }),
 
-/***/ 342:
+/***/ 337:
 /*!*******************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/regeneratorRuntime.js ***!
   \*******************************************************************/
@@ -336,7 +336,7 @@ module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.e
 
 /***/ }),
 
-/***/ 343:
+/***/ 338:
 /*!*****************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/asyncToGenerator.js ***!
   \*****************************************************************/
@@ -377,19 +377,19 @@ module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exp
 
 /***/ }),
 
-/***/ 344:
-/*!****************************************************************************************!*\
-  !*** D:/code/xiaochenxu/knowledge_uni_app/packageB/pages/live-info/uniapp.socketio.js ***!
-  \****************************************************************************************/
+/***/ 339:
+/*!***********************************************************************!*\
+  !*** D:/program/qxqx-vue/packageB/pages/live-info/uniapp.socketio.js ***!
+  \***********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(uni, module) {var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var _classCallCheck = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ 23);
 var _createClass = __webpack_require__(/*! @babel/runtime/helpers/createClass */ 24);
-var _assertThisInitialized = __webpack_require__(/*! @babel/runtime/helpers/assertThisInitialized */ 346);
-var _inherits = __webpack_require__(/*! @babel/runtime/helpers/inherits */ 347);
-var _possibleConstructorReturn = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ 348);
-var _getPrototypeOf = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ 349);
+var _assertThisInitialized = __webpack_require__(/*! @babel/runtime/helpers/assertThisInitialized */ 341);
+var _inherits = __webpack_require__(/*! @babel/runtime/helpers/inherits */ 342);
+var _possibleConstructorReturn = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ 343);
+var _getPrototypeOf = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ 344);
 var _typeof = __webpack_require__(/*! @babel/runtime/helpers/typeof */ 13);
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
@@ -3074,11 +3074,11 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
     };
   }]);
 });
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./../../../../../../Program/HBuilderX/plugins/uniapp-cli/node_modules/webpack/buildin/module.js */ 345)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./../../../../../HBuilderX/plugins/uniapp-cli/node_modules/webpack/buildin/module.js */ 340)(module)))
 
 /***/ }),
 
-/***/ 345:
+/***/ 340:
 /*!***********************************!*\
   !*** (webpack)/buildin/module.js ***!
   \***********************************/
@@ -3111,7 +3111,7 @@ module.exports = function(module) {
 
 /***/ }),
 
-/***/ 346:
+/***/ 341:
 /*!**********************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/assertThisInitialized.js ***!
   \**********************************************************************/
@@ -3128,7 +3128,7 @@ module.exports = _assertThisInitialized, module.exports.__esModule = true, modul
 
 /***/ }),
 
-/***/ 347:
+/***/ 342:
 /*!*********************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/inherits.js ***!
   \*********************************************************/
@@ -3156,7 +3156,7 @@ module.exports = _inherits, module.exports.__esModule = true, module.exports["de
 
 /***/ }),
 
-/***/ 348:
+/***/ 343:
 /*!**************************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/possibleConstructorReturn.js ***!
   \**************************************************************************/
@@ -3164,7 +3164,7 @@ module.exports = _inherits, module.exports.__esModule = true, module.exports["de
 /***/ (function(module, exports, __webpack_require__) {
 
 var _typeof = __webpack_require__(/*! ./typeof.js */ 13)["default"];
-var assertThisInitialized = __webpack_require__(/*! ./assertThisInitialized.js */ 346);
+var assertThisInitialized = __webpack_require__(/*! ./assertThisInitialized.js */ 341);
 function _possibleConstructorReturn(self, call) {
   if (call && (_typeof(call) === "object" || typeof call === "function")) {
     return call;
@@ -3177,7 +3177,7 @@ module.exports = _possibleConstructorReturn, module.exports.__esModule = true, m
 
 /***/ }),
 
-/***/ 349:
+/***/ 344:
 /*!***************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/getPrototypeOf.js ***!
   \***************************************************************/
@@ -3194,10 +3194,10 @@ module.exports = _getPrototypeOf, module.exports.__esModule = true, module.expor
 
 /***/ }),
 
-/***/ 350:
-/*!**************************************************************!*\
-  !*** D:/code/xiaochenxu/knowledge_uni_app/static/js/md53.js ***!
-  \**************************************************************/
+/***/ 345:
+/*!*********************************************!*\
+  !*** D:/program/qxqx-vue/static/js/md53.js ***!
+  \*********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3228,7 +3228,7 @@ module.exports = _getPrototypeOf, module.exports.__esModule = true, module.expor
     root = self;
   }
   var COMMON_JS = !root.JS_MD5_NO_COMMON_JS && ( false ? undefined : _typeof(module)) === 'object' && module.exports;
-  var AMD =  true && __webpack_require__(/*! !webpack amd options */ 353);
+  var AMD =  true && __webpack_require__(/*! !webpack amd options */ 348);
   var ARRAY_BUFFER = !root.JS_MD5_NO_ARRAY_BUFFER && typeof ArrayBuffer !== 'undefined';
   var HEX_CHARS = '0123456789abcdef'.split('');
   var EXTRA = [128, 32768, 8388608, -2147483648];
@@ -3856,11 +3856,11 @@ module.exports = _getPrototypeOf, module.exports.__esModule = true, module.expor
     }
   }
 })();
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../../Program/HBuilderX/plugins/uniapp-cli/node_modules/node-libs-browser/mock/process.js */ 351), __webpack_require__(/*! ./../../../../../Program/HBuilderX/plugins/uniapp-cli/node_modules/webpack/buildin/global.js */ 3), __webpack_require__(/*! ./../../../../../Program/HBuilderX/plugins/uniapp-cli/node_modules/webpack/buildin/module.js */ 345)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../../HBuilderX/plugins/uniapp-cli/node_modules/node-libs-browser/mock/process.js */ 346), __webpack_require__(/*! ./../../../../HBuilderX/plugins/uniapp-cli/node_modules/webpack/buildin/global.js */ 3), __webpack_require__(/*! ./../../../../HBuilderX/plugins/uniapp-cli/node_modules/webpack/buildin/module.js */ 340)(module)))
 
 /***/ }),
 
-/***/ 351:
+/***/ 346:
 /*!********************************************************!*\
   !*** ./node_modules/node-libs-browser/mock/process.js ***!
   \********************************************************/
@@ -3891,7 +3891,7 @@ exports.binding = function (name) {
     var path;
     exports.cwd = function () { return cwd };
     exports.chdir = function (dir) {
-        if (!path) path = __webpack_require__(/*! path */ 352);
+        if (!path) path = __webpack_require__(/*! path */ 347);
         cwd = path.resolve(dir, cwd);
     };
 })();
@@ -3905,7 +3905,7 @@ exports.features = {};
 
 /***/ }),
 
-/***/ 352:
+/***/ 347:
 /*!***********************************************!*\
   !*** ./node_modules/path-browserify/index.js ***!
   \***********************************************/
@@ -4215,11 +4215,11 @@ var substr = 'ab'.substr(-1) === 'b'
     }
 ;
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node-libs-browser/mock/process.js */ 351)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node-libs-browser/mock/process.js */ 346)))
 
 /***/ }),
 
-/***/ 353:
+/***/ 348:
 /*!****************************************!*\
   !*** (webpack)/buildin/amd-options.js ***!
   \****************************************/
@@ -4233,10 +4233,10 @@ module.exports = __webpack_amd_options__;
 
 /***/ }),
 
-/***/ 354:
-/*!*****************************************************************************************************!*\
-  !*** D:/code/xiaochenxu/knowledge_uni_app/packageB/pages/live-info/Agora_Miniapp_SDK_for_WeChat.js ***!
-  \*****************************************************************************************************/
+/***/ 349:
+/*!************************************************************************************!*\
+  !*** D:/program/qxqx-vue/packageB/pages/live-info/Agora_Miniapp_SDK_for_WeChat.js ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9603,7 +9603,7 @@ module.exports = __webpack_amd_options__;
     }(), __webpack_exports__;
   }();
 });
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"], __webpack_require__(/*! ./../../../../../../Program/HBuilderX/plugins/uniapp-cli/node_modules/webpack/buildin/module.js */ 345)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"], __webpack_require__(/*! ./../../../../../HBuilderX/plugins/uniapp-cli/node_modules/webpack/buildin/module.js */ 340)(module)))
 
 /***/ })
 

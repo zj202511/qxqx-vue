@@ -33,7 +33,11 @@
 		{
 			"path": "pages/course/course",
 			"style": {
-				"navigationStyle": "custom"
+				"navigationBarTitleText": "情弦趣享",
+				"navigationBarTextStyle": "black",
+				"app-plus": {
+					"titleNView": "false"
+				}
 			}
 		},
 
