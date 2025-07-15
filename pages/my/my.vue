@@ -36,7 +36,7 @@
 				</view>
 
 
-				<img @click="editmeans(userInfo.id)" class="more" src="static/images/go.png">
+				<img @click="editmeans(userInfo.id)" class="more" src="../../static/mine_right.png">
 
 			</div>
 
@@ -67,7 +67,7 @@
 			</div> -->
 
 			<!-- 体验按钮 -->
-			<view class="experience">
+			<view class="experience" style="display: none;">
 				<text>界定客源体验</text>
 				<button class="exp-btn">立即体验</button>
 			</view>
@@ -196,8 +196,8 @@
 				isTeacherInfo: '',
 				stats: {
 					today: 0,
-					month: 32,
-					total: 1295
+					month: 0,
+					total: 0
 				},
 				menu: [{
 						label: '分享内容',
@@ -368,6 +368,10 @@
 						this.integral = res.data.data.info[0].integral;
 						this.list = res.data.data.info[0].list;
 						this.userInfo = res.data.data.info[0];
+
+						this.stats.month = res.data.data.info[0].monthCount;
+						this.stats.today  = res.data.data.info[0].todayCount;
+						this.stats.total = res.data.data.info[0].allCount;
 						if (res.data.data.info[0].type == '1') {
 							//讲师
 							this.isTeacherInfo = '1'

@@ -2,7 +2,7 @@
 	<view class="container">
 		<!-- 顶部导航栏 -->
 		<view class="top-nav">
-			<text class="back-btn" @click="back">‹</text>
+			<view class="back-btn" @click="goBack"></view>
 			<text class="page-title">查看记录</text>
 			<view class="capsule"></view>
 		</view>
@@ -49,12 +49,12 @@
 					<view class="top-row">
 						<!-- 左侧头像 -->
 						<view class="avatar-wrap">
-							<image class="avatar" :src="item.avatar" />
+							<image class="avatar" :src="item.customer_avatar" />
 						</view>
 
 						<!-- 右侧内容：名字 + 意向标签 -->
 						<view class="name-intent">
-							<text class="name">{{ item.name }}</text>
+							<text class="name">{{ item.customer_nickname }}</text>
 							<view class="intent-tag" :class="item.intentClass">
 								{{ item.intentText }}
 							</view>
@@ -63,7 +63,7 @@
 
 					<!-- 标题 + 子标题：与头像左侧对齐 -->
 					<view class="title-row">
-						<text class="main-title">{{ item.mainTitle }}</text>
+						<text class="main-title">{{ item.name }}</text>
 						<text class="sub-title">{{ item.add_time }}</text>
 					</view>
 
@@ -144,14 +144,15 @@
 			toggleSort(type) {
 				this.sortType = type;
 				this.fetchCourseInfo(); // 切换排序后重新拉取
-			
+
 			},
 
-			back() {
-				uni.navigateBack({
-					delta: 1
-				});
-			}
+			goBack() {
+				uni.navigateTo({
+					url: '../my/my'
+				})
+			},
+
 		}
 	}
 </script>
@@ -176,9 +177,19 @@
 		padding: 16rpx 24rpx;
 	}
 
+	.content-container {
+		width: 95%;
+	}
+
 	.back-btn {
 		color: #fff;
 		font-size: 36rpx;
+		padding: 20rpx;
+		/* 增加点击区域 */
+	}
+
+	.back-btn:active {
+		opacity: 0.7;
 	}
 
 	.page-title {
@@ -242,13 +253,6 @@
 		color: #fff;
 	}
 
-	.top-row {
-		display: flex;
-		align-items: center;
-		/* 保证头像和文字垂直居中 */
-		margin-bottom: 12rpx;
-	}
-
 	.avatar-wrap {}
 
 	.avatar {
@@ -260,13 +264,25 @@
 
 	.name-intent {
 		display: flex;
+		flex-direction: row;
+		/* 水平排列 */
+		justify-content: flex-start;
+		/* 让名称左对齐 */
+		align-items: center;
+		/* 垂直居中 */
+		width: 100%;
+		/* 确保容器的宽度足够 */
 	}
 
 	.name {
 		font-size: 30rpx;
 		color: #333;
 		font-weight: bold;
+		text-align: left;
+		/* 确保标题靠左对齐 */
 		line-height: 40rpx;
+		margin-right: 12rpx;
+		/* 为了给意向标签留点空间 */
 	}
 
 	.intent-tag {
@@ -277,6 +293,8 @@
 		color: #fff;
 		margin-top: 6rpx;
 		width: fit-content;
+		margin-left: auto;
+		/* 自动将意向标签推到右侧 */
 	}
 
 	/* 排序栏 */
@@ -365,28 +383,21 @@
 		color: #fff;
 	}
 
-	/* 标题行：与头像左侧对齐 */
 	.title-row {
 		display: flex;
-		flex-direction: column;
-		margin-bottom: 12rpx;
-		padding-left: 0;
-	}
-
-	.main-title,
-	.sub-title {
-		display: block;
-		text-align: left;
-		margin-bottom: 4rpx;
-		padding-left: 0;
-		position: relative;
-		left: 0;
+		justify-content: space-between;
+		/* 使标题和子标题左右分布 */
+		align-items: center;
+		/* 确保它们垂直居中 */
+		margin-top: 8rpx;
+		/* 为标题和子标题添加间距 */
 	}
 
 	.main-title {
 		font-size: 28rpx;
 		color: #333;
-		line-height: 40rpx;
+		font-weight: bold;
+		line-height: 36rpx;
 	}
 
 	.sub-title {
@@ -395,7 +406,9 @@
 		background-color: #f5f5f5;
 		padding: 4rpx 12rpx;
 		border-radius: 6rpx;
+		margin-top: 4rpx;
 	}
+
 
 	/* 统计信息：查看时间和观看时长在同一行 */
 	.stats {

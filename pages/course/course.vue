@@ -1,11 +1,16 @@
 <template>
 	<view class="page">
-		<!-- <uni-nav-bar status-bar="true" :border="false">
-			
-		</uni-nav-bar> -->
+		<view class="custom-navbar">
+			<!-- 返回按钮 -->
+			<view class="back-btn" @click="goBack">
+				<text class="iconfont icon-jiantouzuo">←</text>
+			</view>
+			<!-- 标题 -->
+			<text class="navbar-title">分享</text>
+		</view>
 
 		<view class="header-row">
-			<view class="search-all-wrap">
+			<view class="search-all-wrap" style="display: none;">
 				<view class="search-wrap" @click="search">
 					<text class="iconfont icon-faxianchaxun"></text>
 					<input disabled="true" class="uni-input" placeholder="搜索视频"
@@ -128,7 +133,8 @@
 				scroll_left: 10,
 				currentScrollId: '',
 				currentShareItem: null,
-				loadingMore: false
+				loadingMore: false,
+				statusBarHeight: 0,
 			}
 		},
 		onShow() {
@@ -153,6 +159,7 @@
 				uni.getSystemInfo({
 					success: (res) => {
 						this.scrollH = res.safeAreaInsets ? res.safeAreaInsets.bottom : 0;
+						this.statusBarHeight = res.statusBarHeight;
 					}
 				});
 			},
@@ -293,6 +300,11 @@
 					url: "../search/search"
 				})
 			},
+			goBack() {
+				uni.navigateTo({
+					url: '../my/my'
+				})
+			},
 			shopcar() {
 				if (!app.globalData.userinfo) {
 					uni.navigateTo({
@@ -332,7 +344,7 @@
 					let path = '';
 					path = `packageB/pages/live_course_info/live_course_info?courseid=${this.currentShareItem.id}`;
 					path =
-						`packageB/pages/live-info/live-infoplay?liveuid=${this.currentShareItem.uid}&courseid=${this.currentShareItem.id}&lessonid=0&thumb=${this.currentShareItem.thumb}`;
+						`packageB/pages/live-info/live-infoplay?sharer_id=${app.globalData.userinfo.id}&liveuid=${this.currentShareItem.uid}&courseid=${this.currentShareItem.id}&lessonid=0&thumb=${this.currentShareItem.thumb}`;
 					return {
 						title: `${this.currentShareItem.name} - 情弦趣享`,
 						path: `${path}&from=share`,
@@ -393,24 +405,24 @@
 <style>
 	@import url("/static/css/course_list.css");
 
-	page {
-		overflow: hidden;
-	}
 
 	.page {
+		padding-top: 80rpx;
 		width: 100%;
 		margin: 0 auto;
 	}
 
 	/deep/ .uni-navbar--fixed {
 		width: 96%;
-		height: 100rpx;
+		height: 100rpx; 
 		padding-top: 30rpx;
-		/* #ifdef MP-WEIXIN*/
-		padding-top: 130rpx;
+		/* #ifdef MP-WEIXIN */
+		padding-top: 80rpx;
+		/* 你可以根据需要调整此值 */
 		/* #endif */
 		position: fixed;
-		top: 0;
+		top: 80rpx;
+		/* 修改top值, 移动导航栏的位置 */
 		left: 6rpx;
 		z-index: 999;
 	}
@@ -430,37 +442,37 @@
 	}
 
 	.search-all-wrap {
-    width: 90vw;
-    margin: 30rpx auto 0 auto;
-    height: 56rpx; // 高度可根据需要调整
-    display: flex;
-    align-items: center;
-}
+		width: 90vw;
+		margin: 30rpx auto 0 auto;
+		height: 56rpx; // 高度可根据需要调整
+		display: flex;
+		align-items: center;
+	}
 
-.search-wrap {
-    width: 100%;
-    height: 100%;
-    border-radius: 28rpx;
-    background-color: #f5f5f5;
-    display: flex;
-    align-items: center;
-    padding-left: 20rpx;
-}
+	.search-wrap {
+		width: 100%;
+		height: 100%;
+		border-radius: 28rpx;
+		background-color: #f5f5f5;
+		display: flex;
+		align-items: center;
+		padding-left: 20rpx;
+	}
 
-.search-wrap text {
-    margin-right: 18rpx;
-    color: #C7C7C7;
-    font-size: 32rpx;
-}
+	.search-wrap text {
+		margin-right: 18rpx;
+		color: #C7C7C7;
+		font-size: 32rpx;
+	}
 
-.search-wrap input {
-    width: 90%;
-    height: 100%;
-    border: none;
-    background: transparent;
-    font-size: 28rpx;
-    color: #333;
-}
+	.search-wrap input {
+		width: 90%;
+		height: 100%;
+		border: none;
+		background: transparent;
+		font-size: 28rpx;
+		color: #333;
+	}
 
 	.new_gouwuche {
 		position: relative;
@@ -537,10 +549,10 @@
 
 	.live-list {
 		width: 90%;
-		height: 190rpx;
+		height: 200rpx;
 		margin: 10rpx auto;
 		border-radius: 8rpx;
-		background-color: #FFFFFF;
+		background-color: #efefef;
 	}
 
 	.xiangziwrap {
@@ -621,7 +633,7 @@
 		border-radius: 35rpx;
 		text-align: center;
 		background-color: #F5F5F5;
-		font-size: 32rpx;
+		
 	}
 
 	/* 课程分类标签样式 */
@@ -663,5 +675,61 @@
 	.share-button .iconfont {
 		margin-right: 6rpx;
 		font-size: 24rpx;
+	}
+
+	/* 自定义导航栏 */
+	.custom-navbar {
+		width: 100%;
+		height: 100rpx;
+		background: url(../../static/images/mybg.jpg) no-repeat;
+
+		display: flex;
+		align-items: center;
+		padding-left: 20rpx;
+		padding-right: 20rpx;
+		position: fixed;
+
+		top: calc(0rpx + {
+					{
+					statusBarHeight
+				}
+			});
+		/* 使用状态栏高度 */
+		left: 0;
+		z-index: 1000;
+		/* 确保导航栏位于最上层 */
+	}
+
+	/* 返回按钮 */
+	.back-btn {
+		width: 50rpx;
+		/* 设置按钮的宽度 */
+		height: 50rpx;
+		/* 设置按钮的高度 */
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-right: 20rpx;
+	}
+
+	/* 返回按钮图标 */
+	.back-btn .iconfont {
+		font-size: 30rpx;
+		/* 设置箭头图标大小 */
+		color: #ffffff;
+		/* 设置图标颜色为白色 */
+	}
+
+	/* 标题 */
+	.navbar-title {
+		flex-grow: 1;
+		text-align: center;
+		font-size: 32rpx;
+		color: #ffffff;
+		/* 设置标题文字颜色为白色 */
+		font-weight: bold;
+	}
+	.course-abs-wrap{
+		margin-top: 140rpx;
 	}
 </style>

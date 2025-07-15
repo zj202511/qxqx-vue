@@ -16,15 +16,15 @@
 			openid:'',
 			wechatuserinfo: '',
 			userinfo: '',
-			site_url: "https://eu.ms1688.site/api/?s=",
-			site_h5url: "https://eu.ms1688.site/",
+			site_url: "https://api.qcwl88.com/api/?s=",
+			site_h5url: "https://api.qcwl88.com/",
 			qiniuimageurl:"https://edu-qiniu.sdwanyue.com",
-			biaoqingurl:"https://eu.ms1688.site/UNIAPP/biaoqing/",
+			biaoqingurl:"https://api.qcwl88.com/UNIAPP/biaoqing/",
 			// #ifdef MP-WEIXIN
-			socket_url: "wss://eu.ms1688.site:19967",
+			socket_url: "wss://api.qcwl88.com:19967",
 			// #endif
 			// #ifndef MP-WEIXIN
-			socket_url: "https://eu.ms1688.site:19967",
+			socket_url: "https://api.qcwl88.com:19967",
 			// #endif
 			sign_key: "400d069a791d51ada8af3e6c2979bcd7",
 			grade_class: {
