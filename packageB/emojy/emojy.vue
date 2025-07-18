@@ -1,6 +1,6 @@
 <template>
 	<!--  -->
-	<view>
+	<view style="background: #222; z-index: 9999; position: fixed; left: 0; right: 0; bottom: 0; height: 400rpx;">
 		<swiper class='swiper-box' indicator-dots="true" indicator-active-color="#2C62EF" indicator-color="#000000">
 			<swiper-item class="swiper-box2">
 				<view @click="selectemojy(item)" v-for="(item,index) in emojylist1" :key = "index" class="iconBg">
@@ -86,17 +86,9 @@
 		},
 
 		created() {
-			var imagename = '';
-			
-
-			var imagename = '';
-			// #ifdef MP-WEIXIN
-			var path = '../../packageB/static/mipmap-hdpi/';
-			// #endif
-			// #ifdef H5
-			var path = '../../static/mipmap-hdpi/';
-			// #endif
-			
+			// console.log(111)
+			let path = '../static/mipmap-hdpi/';
+			let imagename = '';
 			var subarray = [];
 			let index = 0;
 

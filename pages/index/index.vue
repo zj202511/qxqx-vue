@@ -4,7 +4,7 @@
 		<uni-nav-bar status-bar="true" :border="false">
 			<view slot="left">
 				<view class="check_class">
-					<text>情创未来</text>
+					<text>情弦趣享</text>
 				</view>
 			</view>
 

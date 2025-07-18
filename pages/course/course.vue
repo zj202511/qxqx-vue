@@ -74,9 +74,24 @@
 							<image class="live-teacher-avatar" :src="item.avatar" mode="aspectFill"></image>
 							<text class="teacher-name">{{ item.user_nickname }}</text>
 							<view class="price-wrap">
-								<button open-type="share" class="share-button" @tap="shareCourse(item)">
-									<text class="iconfont icon-fenxiang"></text>
-									<text>分享</text>
+								<!-- 使用v-show替代v-if避免可能的渲染问题 -->
+								<button 
+								  v-show="isLoggedIn"
+								  open-type="share"
+								  class="share-button"
+								  @tap="shareCourse(item)"
+								>
+								  <text class="iconfont icon-fenxiang"></text>
+								  <text>分享</text>
+								</button>
+								
+								<button 
+								  v-show="!isLoggedIn"
+								  class="share-button"
+								  @tap="goToLogin"
+								>
+								  <text class="iconfont icon-fenxiang"></text>
+								  <text>登录分享</text>
 								</button>
 							</view>
 						</view>
@@ -135,12 +150,12 @@
 				currentShareItem: null,
 				loadingMore: false,
 				statusBarHeight: 0,
+				isLoggedIn: false,
+				loginChecked: false
 			}
 		},
 		onShow() {
-			if (app.globalData.userinfo != '') {
-				this.userInfo = app.globalData.userinfo;
-			}
+			this.checkLogin(true)
 		},
 		onReady() {
 			this.initPageHeight();
@@ -155,6 +170,25 @@
 			this.getData();
 		},
 		methods: {
+			async checkLogin(force = false) {
+				if (this.loginChecked && !force) return
+				try {
+					const userInfo = app.globalData.userinfo;
+					console.log(userInfo)
+					// 增加字段验证
+					this.isLoggedIn = !!(userInfo?.token && userInfo?.id)
+
+					this.loginChecked = true
+				} catch (e) {
+					console.error('登录检查错误:', e)
+					this.isLoggedIn = false
+				}
+			},
+			goToLogin() {
+			        uni.navigateTo({
+			          url: '/pages/login/login'
+			        });
+			    },
 			initPageHeight() {
 				uni.getSystemInfo({
 					success: (res) => {
@@ -414,7 +448,7 @@
 
 	/deep/ .uni-navbar--fixed {
 		width: 96%;
-		height: 100rpx; 
+		height: 100rpx;
 		padding-top: 30rpx;
 		/* #ifdef MP-WEIXIN */
 		padding-top: 80rpx;
@@ -633,7 +667,7 @@
 		border-radius: 35rpx;
 		text-align: center;
 		background-color: #F5F5F5;
-		
+
 	}
 
 	/* 课程分类标签样式 */
@@ -729,7 +763,8 @@
 		/* 设置标题文字颜色为白色 */
 		font-weight: bold;
 	}
-	.course-abs-wrap{
+
+	.course-abs-wrap {
 		margin-top: 140rpx;
 	}
 </style>

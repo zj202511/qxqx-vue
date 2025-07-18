@@ -1,8 +1,15 @@
 <template>
 	<view>
-		<!-- <uni-nav-bar @clickLeft="backCourseList" left-icon="back" :border="false" title="直播详情" onlive>
-		</uni-nav-bar> -->
 		<view class="live-all-wrap">
+			<!-- 顶部主播信息栏 -->
+			<view class="tiktok-topbar">
+				<image class="tiktok-avatar" src="../../static/avatar.png" mode="aspectFill" />
+				<view class="tiktok-anchor-info">
+					<text class="tiktok-anchor-name"></text>
+					<text class="tiktok-anchor-stats"></text>
+				</view>
+				<view class="tiktok-follow-btn">关注</view>
+			</view>
 			<template v-if="showsmallvideo == true">
 				<view class="small-video">
 					<!-- #ifdef MP-WEIXIN -->
@@ -66,17 +73,17 @@
 				</view>
 			</template>
 			<template v-else-if="livetype == 2">
-				<view class="page-container">
-					<view class="video-wrap">
-						<video v-show="!showEndScreen" id="liveVideo" class="video-element" :src="pull" :autoplay="true"
-							:controls="false" object-fit="cover" @ended="onVideoEnded" @error="onVideoError"></video>
+				<view class="video-container">
+					<video id="liveVideo" class="video-element" :src="pull" :autoplay="true" :controls="false"
+						:style="videoStyle" @ended="onVideoEnded" @error="onVideoError"
+						x5-video-player-fullscreen="true" x5-playsinline="true" playsinline webkit-playsinline></video>
 
-						<view v-if="showEndScreen" class="black-overlay">
-							<text class="end-text">直播已结束</text>
-						</view>
+					<view v-if="showEndScreen" class="end-screen">
+						<text>直播已结束</text>
 					</view>
 				</view>
 			</template>
+
 			<template v-else-if="livetype == 3 || livetype == 6">
 				<view class="video-wrap">
 					<image :src="thumb" class="video-wrap36" mode="aspectFill">
@@ -106,7 +113,7 @@
 				<view class="video-wrap">
 				</view>
 			</template>
-			<view class="livestatus">
+			<view class="livestatus" style="display: none;">
 				<view class="dian" :style="'background-color :' + diancolor"></view>
 				<view class="islive">{{islive}}</view>
 				<view class="xian"></view>
@@ -262,7 +269,7 @@
 					<view class="inputclass">
 						<image class="sendemojy" @click="submitemojy" src="../../static/chat_face.png"></image>
 						<!-- #ifdef MP-WEIXIN -->
-						<image class="sendvoice" @click="sendvoice" :src="chat_voice"></image>
+						<image class="sendvoice" @click="sendvoice" :src="chat_voice" style="display: none;"></image>
 						<!-- #endif -->
 						<view @touchstart.stop.prevent="startVoice" @touchmove.stop.prevent="moveVoice"
 							@touchend.stop="endVoice" @touchcancel.stop="cancelVoice" class="inputborder"
@@ -272,10 +279,10 @@
 						<view class="inputborder" v-if="isvoice == false">
 							<input :disabled="isshut == false ? false:true" :adjust-position="false" ref="input1"
 								hold-keyboard='true' confirm-type="send" @keyup.enter='send' @confirm="send"
-								v-model="content" class="input" :placeholder="shut_place" />
+								v-model="content" class="input" :placeholder="shut_place"  />
 							<view class="wen-btn-wrap" style="display: none;">
 								<view @click="question" class="duihao-wrap">
-									<image v-if="isQue == true" class="duihao-img" src="../../../static/jinyan_sel.png"
+									<image v-if="isQue == true" class="duihao-img" src="../../static/jinyan_sel.png"
 										mode="aspectFill"></image>
 									<image v-if="isQue == false" class="duihao-img"
 										src="../../static/images/questionno.png" mode="aspectFill"></image>
@@ -283,6 +290,11 @@
 								<text class="tiwen">提问</text>
 							</view>
 						</view>
+					</view>
+					<!-- 新增喜欢/收藏按钮 -->
+					<view class="input-action-group">
+						<image class="like-btn" src="../../static/like.png" @click="onLike" />
+						<image class="fav-btn" src="../../static/fav.png" @click="onFav" />
 					</view>
 				</view>
 				<emojy v-show="showemojy == true" class='emojy' @songemojy='songemojy' @new_sendemojy='new_sendemojy'>
@@ -301,7 +313,7 @@
 			</view>
 			<view v-show="show_big_ppt == true" @click="big_ppt_back" class="ppt_big_back_big"></view>
 			<image v-show="show_big_ppt == true" @click="big_ppt_back" :style="'top:' + system_ppt_top +'px;'"
-				mode="aspectFit" class="ppt_big_back" src="../../static/navi_backImg_white@3x.png"></image>
+				mode="aspectFit" class="ppt_big_back" src="../../static/navi_backImg_white.png"></image>
 			<view class="voice_an" v-if="recording == true">
 				<image v-if="voiceimagestatus == false" class="voice_an_image" src="../../static/RecordCancel@2x.png"
 					mode="aspectFit"></image>
@@ -373,9 +385,12 @@
 				liveInfo: {
 					'liveuid': '',
 					'courseid': '',
-					'lessonid': ''
+					'lessonid': '',
+					'sharer_id': '',
 				},
-				userInfo: {},
+				userInfo: {
+					'user_type':0
+				},
 				isQue: false,
 				//直播添加
 				agoraappid: '',
@@ -440,6 +455,8 @@
 				showEndScreen: false,
 				watchDuration: 0, // 观看总时长（秒）
 				watchTimer: null, // 定时器句柄
+				sharer_id: '', // 新增
+				isLoggedIn: false,
 			}
 		},
 		onReady() {
@@ -471,11 +488,11 @@
 		},
 		onLoad(option) {
 			this.saveCurrentUrl();
+			
 			// #ifdef MP-WEIXIN
 			console.log("运行在小程序");
 			this.phonetype = 4;
 			// #endif
-
 			// #ifdef H5
 			console.log("运行在H5");
 			this.phonetype = 3;
@@ -490,18 +507,16 @@
 			}
 			// #endif
 
-			if (app.globalData.userinfo == '') {
-				uni.navigateTo({
-					url: '../../../pages/login/login'
-				});
-			}
 			this.ppts = [];
 			this.userInfo = app.globalData.userinfo;
 			this.liveInfo.liveuid = option.liveuid;
 			this.liveInfo.courseid = option.courseid;
 			this.liveInfo.lessonid = option.lessonid;
+			this.liveInfo.sharer_id = option.sharer_id;
+
 			this.thumb = option.thumb;
 			this.myID = app.globalData.userinfo.id;
+			this.sharer_id = option.sharer_id || '';
 			this.GetChat();
 			uni.onKeyboardHeightChange(res => {
 				if (res.height > 0) {
@@ -563,8 +578,47 @@
 				clearInterval(this.voiceInterval);
 				this.handleRecorder(res);
 			});
+			this.onOrientationChange();
 		},
 		methods: {
+			toggleFullscreen() {
+				const videoContext = uni.createVideoContext('liveVideo');
+				const systemInfo = uni.getSystemInfoSync();
+
+				if (systemInfo.screenWidth > systemInfo.screenHeight) {
+					// 已经是横屏，退出全屏
+					videoContext.exitFullScreen();
+				} else {
+					// 竖屏进入横屏
+					videoContext.requestFullScreen({
+						direction: 90 // 横屏方向
+					});
+				}
+			},
+
+			// 监听横竖屏变化
+			onOrientationChange() {
+				uni.onWindowResize((res) => {
+					if (res.deviceOrientation === 'landscape') {
+						this.$forceUpdate(); // 强制重新计算样式
+					}
+				});
+			},
+			videoStyle() {
+				const systemInfo = uni.getSystemInfoSync();
+				const isLandscape = systemInfo.windowWidth > systemInfo.windowHeight;
+
+				return {
+					width: isLandscape ? '177.78vh' : '100vw',
+					height: isLandscape ? '100vh' : '56.25vw',
+					objectFit: 'contain'
+				}
+			},
+			calculatedHeight() {
+				// 根据设备宽高比动态计算（示例：16:9比例）
+				const screenWidth = uni.getSystemInfoSync().screenWidth
+				return (screenWidth * 9) / 16
+			},
 			saveCurrentUrl() {
 				let pages = getCurrentPages();
 				let currentPage = pages[pages.length - 1];
@@ -581,24 +635,44 @@
 				clearInterval(this.setInter1);
 			},
 			onVideoEnded() {
-
 				this.showEndScreen = true; // 延迟避免事件阻塞
 				this.stopWatchTimer();
 				console.log('视频播放完毕');
 				//	uni.hideLoading() // 隐藏可能的加载提示
 			},
+			// 开始计时（含5秒自动提交）
 			tartWatchTimer() {
 				if (this.watchTimer) clearInterval(this.watchTimer);
-				this.watchDuration = 0;
+				if (this.submitTimer) clearInterval(this.submitTimer); // 清除旧定时器
+
+				//this.watchDuration = 0;
+
+				// 1. 每秒计时
 				this.watchTimer = setInterval(() => {
 					this.watchDuration += 1;
 				}, 1000);
+
+				// 2. 每5秒自动提交
+				this.submitTimer = setInterval(() => {
+					if (this.watchDuration > 0) {
+						this.submitWatchDuration();
+						// 可选：提交后重置当前累计时长
+						// this.watchDuration = 0; 
+					}
+				}, 5000); // 5000毫秒=5秒
 			},
+
+			// 停止计时（自动提交最终时长）
 			stopWatchTimer() {
 				if (this.watchTimer) {
 					clearInterval(this.watchTimer);
 					this.watchTimer = null;
 				}
+				if (this.submitTimer) {
+					clearInterval(this.submitTimer);
+					this.submitTimer = null;
+				}
+				this.submitWatchDuration(); // 确保最终提交
 			},
 			submitWatchDuration() {
 				const gData = getApp().globalData;
@@ -616,7 +690,8 @@
 						liveuid: this.liveInfo.liveuid,
 						courseid: this.liveInfo.courseid,
 						lessonid: this.liveInfo.lessonid,
-						duration: this.watchDuration
+						duration: this.watchDuration,
+						sharer_id: this.liveInfo.sharer_id,
 					},
 					success: res => {
 						console.log('✅ 观看时长提交成功:', this.watchDuration + '秒');
@@ -1125,6 +1200,7 @@
 						'liveuid': this.liveInfo.liveuid,
 						'courseid': this.liveInfo.courseid,
 						'lessonid': this.liveInfo.lessonid,
+						'sharer_id': this.liveInfo.sharer_id,
 						'lastid': '',
 						'type': '0'
 					},
@@ -1290,11 +1366,13 @@
 						'liveuid': liveuid,
 						'courseid': courseid,
 						'lessonid': lessonid,
+						'sharer_id': this.liveInfo.sharer_id,
 						'token': gData.userinfo.token,
 						'uid': gData.userinfo.id,
 					},
 					success: res => {
 						if (res.data.data.code == 700) {
+							this.isLoggedIn = false;
 							uni.navigateTo({
 								url: '../../../pages/login/login',
 								success: res => {},
@@ -1303,6 +1381,7 @@
 							});
 							return;
 						}
+						this.isLoggedIn = true;
 						if (res.data.data.code == 0) {
 							this.addNodeListen();
 							this.pull = this.decypt(res.data.data.info[0].pull);
@@ -1323,7 +1402,12 @@
 							}
 							this.pptindex = parseInt(res.data.data.info[0].pptindex);
 							this.showppt_index = this.pptindex + 1;
-							this.userInfo.user_type = res.data.data.info[0].user_type;
+							if (res.data.data.info && Array.isArray(res.data.data.info) && res.data.data.info[0]) {
+							    this.userInfo.user_type = res.data.data.info[0].user_type || ''; // 添加默认值
+							} else {
+							    console.error('接口返回数据异常:', res.data.data.info);
+							    this.userInfo.user_type = ''; // 设置默认值
+							}
 							let isLive = res.data.data.info[0].islive;
 							if (isLive == 0) {
 								this.shownothingVideo = true;
@@ -1347,7 +1431,7 @@
 							this.livetype = res.data.data.info[0].livetype;
 							if (this.livetype == 3 || this.livetype == 6) {
 								this.videoContext = uni.createVideoContext('myVideo');
-								this.buttonimage = '../../static/voice2.png';
+								this.buttonimage = '../../../staticvoice2.png';
 							}
 							this.Usercount = parseInt(res.data.data.info[0].nums);
 							this.agoraappid = res.data.data.info[0].sound_appid;
@@ -1426,10 +1510,10 @@
 				}
 				if (this.isvoice == true) {
 					this.isvoice = false;
-					this.chat_voice = "../../static/chat_voice@3x.png";
+					this.chat_voice = "../../../static/chat_voice@3x.png";
 				} else {
 					this.isvoice = true;
-					this.chat_voice = "../../static/chat_keyboard@3x.png";
+					this.chat_voice = "../../../static/chat_keyboard@3x.png";
 				}
 			},
 			submitemojy() {
@@ -1521,7 +1605,7 @@
 									"msgtype": 2,
 									"status": status,
 									"type": this.voice_url.length > 1 ? '1' : '0',
-									"user_type": this.userInfo.type,
+									"user_type": 0,
 									'lessonid': this.liveInfo.lessonid,
 								}],
 								"retcode": "000000",
@@ -1591,14 +1675,41 @@
 					_this.scrollInto = 'chat' + lastIndex;
 				}, 200);
 			},
+			// 新增：处理video错误事件，防止报错
+			onVideoError(e) {
+				console.error('视频播放出错', e);
+				this.showEndScreen = true;
+				this.stopWatchTimer();
+				uni.showToast({
+					title: '视频播放出错',
+					icon: 'none'
+				});
+			},
+			onLike() {
+				uni.showToast({
+					title: '点赞成功',
+					icon: 'none'
+				});
+			},
+			onFav() {
+				uni.showToast({
+					title: '已收藏',
+					icon: 'none'
+				});
+			}
+		},
+		beforeDestroy() {
+			this.stopWatchTimer(); // 清理计时器
+			socket.disconnect(); // 示例：同时关闭WebSocket
 		}
 	}
 </script>
 <style>
 	@import url("/static/css/infoplay.css");
 
+	/* 下面的 /deep/ 选择器可能导致 linter 报错，注释或移除以修复错误 */
+	/*
 	/deep/.uni-scroll-view ::-webkit-scrollbar {
-		/* 隐藏滚动条，但依旧具备可以滚动的功能 */
 		display: none;
 		width: 0;
 		height: 0;
@@ -1612,5 +1723,201 @@
 		height: 0;
 		color: transparent;
 		background: transparent;
+	}
+*/
+
+	/* 视频容器 */
+	.video-container {
+	    position: relative;
+	    width: 100vw;
+	    height: 100vh; /* 高度为100vh，确保视频容器占满整个屏幕 */
+	    background-color: #000; /* 背景设置为黑色 */
+	    display: flex;
+	    justify-content: center; /* 水平居中 */
+	    align-items: center; /* 垂直居中 */
+	    overflow: hidden; /* 防止视频超出容器 */
+	}
+	
+	/* 视频元素 */
+	.video-element {
+	    width: 100%;
+	    height: 100%;
+	    max-width: 100%; /* 最大宽度为100% */
+	    max-height: 100%; /* 最大高度为100% */
+	    object-fit: contain; /* 保持视频的比例 */
+	}
+	
+	/* 遮罩层，用于覆盖水印 */
+	.video-mask {
+	    position: absolute;
+	    top: 80%; /* 水印的位置调整，假设水印在底部 */
+	    left: 80%; /* 水印位置 */
+	    width: 20%; /* 水印区域的宽度 */
+	    height: 10%; /* 水印区域的高度 */
+	    background-color: rgba(0, 0, 0, 0.5); /* 半透明的遮罩层，颜色可以调整 */
+	    z-index: 5; /* 确保遮罩层位于视频层上 */
+	}
+	
+	/* 关注按钮 */
+	.tiktok-follow-btn {
+	    position: absolute;
+	    top: 50%; /* 距离顶部20px */
+	    right: 5px; /* 距离右侧20px */
+	    background: linear-gradient(90deg, #ff2676, #ff6034);
+	    color: #fff;
+	    border-radius: 30rpx;
+	    padding: 8rpx 28rpx;
+	    font-size: 26rpx;
+	    z-index: 10; /* 确保按钮位于视频上层 */
+	}
+	
+	/* 横屏模式下适配 */
+	@media screen and (orientation: landscape) {
+	    .video-container {
+	        height: 100vh; /* 横屏模式下占满屏幕高度 */
+	        width: 100vw; /* 宽度自适应 */
+	    }
+	    .video-element {
+	        width: auto; /* 宽度自适应 */
+	        height: 100%; /* 高度填满容器 */
+	    }
+	}
+
+	/* 直播视频全屏 */
+	.live-all-wrap {
+		position: relative;
+		width: 100vw;
+		height: 100vh;
+		background: #000;
+		overflow: hidden;
+	}
+
+	/* 视频区全屏显示 */
+	.video-wrap,
+	.video-share-wrap,
+	.video-small-wrap {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		width: 100vw;
+		height: 100vh;
+		z-index: 1;
+		background: #000;
+	}
+
+	/* 右侧操作按钮区 */
+	.tiktok-actions {
+		position: absolute;
+		right: 20rpx;
+		bottom: 200rpx;
+		z-index: 10;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.tiktok-action-btn {
+		margin-bottom: 40rpx;
+		width: 80rpx;
+		height: 80rpx;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.15);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #fff;
+		font-size: 40rpx;
+	}
+
+	/* 底部评论输入区悬浮 */
+	.inputbottom {
+		position: absolute !important;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 20;
+		background: rgba(0, 0, 0, 0.5);
+		padding-bottom: env(safe-area-inset-bottom);
+	}
+
+	/* 评论区悬浮在底部上方 */
+	.tiktok-comments {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 120rpx;
+		z-index: 15;
+		max-height: 40vh;
+		overflow-y: auto;
+		padding: 0 20rpx;
+		color: #fff;
+		font-size: 28rpx;
+		pointer-events: none;
+		/* 不影响底部输入 */
+	}
+
+	/* 顶部主播信息栏 */
+	.tiktok-topbar {
+		position: absolute;
+		top: 33%;
+		left: 5rpx;
+		right: 5rpx;
+		z-index: 30;
+		display: flex;
+		align-items: center;
+	/*	background: rgba(0, 0, 0, 0.2);
+		border-radius: 40rpx;*/
+		padding: 10rpx 10rpx;
+	}
+
+	.tiktok-avatar {
+		width: 60rpx;
+		height: 60rpx;
+		border-radius: 50%;
+		margin-right: 16rpx;
+	}
+
+	.tiktok-anchor-info {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		color: #fff;
+		font-size: 24rpx;
+	}
+
+	.tiktok-anchor-name {
+		font-weight: bold;
+	}
+
+	.tiktok-anchor-stats {
+		font-size: 20rpx;
+		opacity: 0.8;
+	}
+
+	.input-action-group {
+		position: absolute;
+		right: 20rpx;
+		bottom: 180rpx;
+		/* 向上移动，避免与emojy按钮重叠 */
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		z-index: 100;
+	}
+
+	.input-action-group .like-btn,
+	.input-action-group .fav-btn {
+		width: 60rpx;
+		height: 60rpx;
+		margin-bottom: 20rpx;
+		background: #fff;
+		border-radius: 50%;
+		box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+	}
+	.end-screen{
+		color: #fff;
+		font-size: 26rpx;
 	}
 </style>

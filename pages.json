@@ -314,6 +314,7 @@
 					"path": "pages/live-info/live-infoplay",
 					"style": {
 						"navigationBarTitleText": "直播详情",
+						"navigationStyle": "custom", 
 						"app-plus": {
 							"titleNView": false
 						}

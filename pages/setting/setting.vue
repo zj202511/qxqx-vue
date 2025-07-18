@@ -1,11 +1,5 @@
 <template>
   <view class="setting-all-wrap">
-    <!-- 返回首页按钮 -->
-    <view class="back-home-btn" @click="backHome">
-      <text class="iconfont icon-shouye"></text>
-      <text>返回首页</text>
-    </view>
-    
     <view class="touce-wrap">
       <view @click="xieyi" class="touce-item">
         <text class="touch_txt">《用户服务协议》</text>
@@ -16,7 +10,7 @@
         <text class="set-num-txt iconfont icon-jinrujiantou"></text>
       </view>
       <view @click="touchMe" class="touce-item">
-        <text class="touch_txt2">联系我们</text>
+        <text class="touch_txt2">关于我们</text>
         <text class="set-num-txt iconfont icon-jinrujiantou"></text>
       </view>
       <view @click="clearcache" class="touce-item">
@@ -140,7 +134,7 @@ page {
 .setting-all-wrap {
   margin: 0 auto;
   border-top: 4rpx solid #E8E8E8;
-  padding-top: 120rpx; /* 为顶部按钮留出空间 */
+  padding-top: 10rpx; /* 为顶部按钮留出空间 */
 }
 
 /* 返回首页按钮 */
@@ -165,7 +159,7 @@ page {
 }
 
 .touce-wrap {
-  height: 457rpx;
+  height: 357rpx;
   margin: 0 auto;
   background-color: #FFFFFF;
 }

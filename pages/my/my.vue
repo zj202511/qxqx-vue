@@ -238,12 +238,12 @@
 		},
 
 		onLoad() {
-			if (app.globalData.userinfo == '') {
-				uni.navigateTo({
-					url: '../login/login'
-				})
-				return;
-			}
+		//	if (app.globalData.userinfo == '') {
+		//		uni.navigateTo({
+		//			url: '../login/login'
+		//		})
+		//		return;
+		//	}
 			this.getinfo();
 		},
 		onShow() {
