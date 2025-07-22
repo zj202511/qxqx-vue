@@ -1,25 +1,25 @@
 <script>
-// +----------------------------------------------------------------------
-// |万岳科技开源系统 [山东万岳信息科技有限公司]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2020~2022 https://git.sdwanyue.com All rights reserved.
-// +----------------------------------------------------------------------
-// | 万岳科技相关开源系统，需标注"代码来源于万岳科技开源项目"后即可免费自用运营，前端运营时展示的内容不得使用万岳科技相关信息
-// +----------------------------------------------------------------------
-// | Author: 万岳科技开源官方 < wanyuekj2020@163.com >        
-// +----------------------------------------------------------------------
+	// +----------------------------------------------------------------------
+	// |万岳科技开源系统 [山东万岳信息科技有限公司]
+	// +----------------------------------------------------------------------
+	// | Copyright (c) 2020~2022 https://git.sdwanyue.com All rights reserved.
+	// +----------------------------------------------------------------------
+	// | 万岳科技相关开源系统，需标注"代码来源于万岳科技开源项目"后即可免费自用运营，前端运营时展示的内容不得使用万岳科技相关信息
+	// +----------------------------------------------------------------------
+	// | Author: 万岳科技开源官方 < wanyuekj2020@163.com >        
+	// +----------------------------------------------------------------------
 
 	export default {
 		globalData: {
 			onReview: false,
 			small_shelves: '1.0.0',
-			openid:'',
+			openid: '',
 			wechatuserinfo: '',
 			userinfo: '',
 			site_url: "https://api.qcwl88.com/api/?s=",
 			site_h5url: "https://api.qcwl88.com/",
-			qiniuimageurl:"https://edu-qiniu.sdwanyue.com",
-			biaoqingurl:"https://api.qcwl88.com/UNIAPP/biaoqing/",
+			qiniuimageurl: "https://edu-qiniu.sdwanyue.com",
+			biaoqingurl: "https://api.qcwl88.com/UNIAPP/biaoqing/",
 			// #ifdef MP-WEIXIN
 			socket_url: "wss://api.qcwl88.com:19967",
 			// #endif
@@ -48,7 +48,7 @@
 				"[握手]", "[18禁]", "[菜刀]", "[威武]", "[给力]", "[爱心]", "[心碎]",
 				"[便便]", "[礼物]", "[生日]", "[喝彩]", "[雷]"
 			],
-			
+
 			pinyinArray: [
 				"face_001.png", "face_002.png", "face_003.png", "face_004.png",
 				"face_005.png", "face_006.png", "face_007.png", "face_008.png",
@@ -93,22 +93,36 @@
 			this.utilJs.update();
 			//检查网络
 			this.utilJs.onNetWork();
-		},onLoad() {
-	
+
+			const isLoggedIn = uni.getStorageSync('isLoggedIn');
+			const userinfo = uni.getStorageSync('userinfo');
+
+			if (isLoggedIn && token) {
+				// 如果有token，可以在这里验证token是否过期
+				// 如果token有效，恢复登录状态
+				this.globalData.userinfo = userinfo;
+				this.globalData.isLoggedIn = true;
+
+				// 如果需要，可以在这里发送请求验证token有效性
+			}
+
+		},
+		onLoad() {
+
 		},
 		onShow: function() {
-		 console.log( 'show');
+			console.log('show');
 			uni.getStorage({
-			    key: 'userinfo',
-			    success: function (res) {
+				key: 'userinfo',
+				success: function(res) {
 					console.log('APP.vue页面获取缓存成功');
 					getApp().globalData.userinfo = res.data;
-			    }
+				}
 			});
 		},
-		
+
 		onHide: function() {
-			
+
 		}
 	}
 </script>
@@ -134,22 +148,21 @@
 	.uni-navbar {
 		margin-top: 52rpx !important;
 	}
-	
+
 	/deep/.uni-scroll-view ::-webkit-scrollbar {
-		 /* 隐藏滚动条，但依旧具备可以滚动的功能 */
-		 display: none;
-		 width: 0;
-		 height: 0;
-		 color: transparent;
-		 background: transparent;
+		/* 隐藏滚动条，但依旧具备可以滚动的功能 */
+		display: none;
+		width: 0;
+		height: 0;
+		color: transparent;
+		background: transparent;
 	}
-	
+
 	/deep/::-webkit-scrollbar {
-		 display: none;
-		 width: 0;
-		 height: 0;
-		 color: transparent;
-		 background: transparent;
+		display: none;
+		width: 0;
+		height: 0;
+		color: transparent;
+		background: transparent;
 	}
-	
 </style>

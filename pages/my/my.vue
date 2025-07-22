@@ -199,12 +199,40 @@
 					month: 0,
 					total: 0
 				},
+<<<<<<< HEAD
 				fullMenu: [
 					{ label: '视频中心', icon: '../../static/images/icon7.png', url: '../course/course', key: 'share' },
 					{ label: '查看记录', icon: '../../static/images/icon4.png', url: '../hasbuy/hasbuy', key: 'record' },
 					{ label: '意见反馈', icon: '../../static/images/icon1.png', url: '../yijian-fankui/yijian-fankui', key: 'feedback' },
 					{ label: '关于我们', icon: '../../static/images/icon2.png', url: '../lianxi-we/lianxi-we', key: 'about' },
 					{ label: '设置', icon: '../../static/images/icon5.png', url: '../setting/setting', key: 'setting' }
+=======
+				menu: [{
+						label: '视频中心',
+						icon: '../../static/images/icon7.png',
+						url: '../course/course'
+					},
+					{
+						label: '查看记录',
+						icon: '../../static/images/icon4.png',
+						url: '../hasbuy/hasbuy'
+					},
+					{
+						label: '意见反馈',
+						icon: '../../static/images/icon1.png',
+						url: '../yijian-fankui/yijian-fankui'
+					},
+					{
+						label: '关于我们',
+						icon: '../../static/images/icon2.png',
+						url: '../lianxi-we/lianxi-we'
+					},
+					{
+						label: '设置',
+						icon: '../../static/images/icon5.png',
+						url: '../setting/setting'
+					}
+>>>>>>> 746cf14649d487197d77c4d0507f50edadc5227b
 				],
 				menu: [],
 				list: [],
