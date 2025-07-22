@@ -253,8 +253,11 @@
 
 							const userinfo = res.data.data.info[0];
 							app.globalData.userinfo = userinfo;
-							uni.setStorageSync('userinfo', userinfo);
 
+							// 持久化存储到本地
+							uni.setStorageSync('userinfo', userinfo);
+							// 设置登录状态
+							uni.setStorageSync('isLoggedIn', true);
 							uni.showToast({
 								title: '登录成功',
 								icon: 'success'
@@ -280,7 +283,7 @@
 			goBack() {
 				uni.navigateBack({
 					delta: 1
-				});
+				}); 
 			},
 			sort2url(params) {
 				const keys = Object.keys(params).sort();
@@ -298,7 +301,7 @@
 <style>
 	/* 容器样式 */
 	.login-container {
-		position: relative; 
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -307,25 +310,25 @@
 		padding: 40rpx;
 		background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 	}
-	
+
 	.back-btn {
-	  position: absolute;
-	  top: 100rpx;
-	  left: 30rpx;
-	  width: 60rpx;
-	  height: 60rpx;
-	  border-radius: 50%;
-	  background-color: rgba(0, 0, 0, 0.2);
-	  display: flex;
-	  align-items: center;
-	  justify-content: center;
-	  z-index: 10;
+		position: absolute;
+		top: 100rpx;
+		left: 30rpx;
+		width: 60rpx;
+		height: 60rpx;
+		border-radius: 50%;
+		background-color: rgba(0, 0, 0, 0.2);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 10;
 	}
-	
+
 	.back-btn .iconfont {
-	  color: #fff;
-	  font-size: 40rpx;
-	  font-weight: bold;
+		color: #fff;
+		font-size: 40rpx;
+		font-weight: bold;
 	}
 
 	/* Logo区域 */
