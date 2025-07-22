@@ -6,7 +6,7 @@
 				<text class="iconfont icon-jiantouzuo">←</text>
 			</view>
 			<!-- 标题 -->
-			<text class="navbar-title">分享</text>
+			<text class="navbar-title">视频中心</text>
 		</view>
 
 		<view class="header-row">
@@ -74,24 +74,29 @@
 							<image class="live-teacher-avatar" :src="item.avatar" mode="aspectFill"></image>
 							<text class="teacher-name">{{ item.user_nickname }}</text>
 							<view class="price-wrap">
-								<!-- 使用v-show替代v-if避免可能的渲染问题 -->
-								<button 
-								  v-show="isLoggedIn"
-								  open-type="share"
-								  class="share-button"
-								  @tap="shareCourse(item)"
-								>
-								  <text class="iconfont icon-fenxiang"></text>
-								  <text>分享</text>
+								<!-- type为0的用户，只显示观看按钮 -->
+								<button v-if="isLoggedIn && userInfo && userInfo.type === '0'" class="watch-button"
+									@tap="viewLiveInfo(item)">
+									<text class="iconfont icon-bofang"></text>
+									<text>观看</text>
 								</button>
-								
-								<button 
-								  v-show="!isLoggedIn"
-								  class="share-button"
-								  @tap="goToLogin"
-								>
-								  <text class="iconfont icon-fenxiang"></text>
-								  <text>登录分享</text>
+
+								<!-- 其他已登录用户，显示分享和观看按钮 -->
+								<template v-else-if="isLoggedIn && userInfo">
+									<button class="share-button" open-type="share" @tap="shareCourse(item)">
+										<text class="iconfont icon-fenxiang"></text>
+										<text>分享</text>
+									</button>
+									<button class="watch-button" @tap="viewLiveInfo(item)">
+										<text class="iconfont icon-bofang"></text>
+										<text>观看</text>
+									</button>
+								</template>
+
+								<!-- 未登录用户 -->
+								<button v-else class="share-button" @tap="goToLogin">
+									<text class="iconfont icon-fenxiang"></text>
+									<text>登录分享</text>
 								</button>
 							</view>
 						</view>
@@ -174,7 +179,6 @@
 				if (this.loginChecked && !force) return
 				try {
 					const userInfo = app.globalData.userinfo;
-					console.log(userInfo)
 					// 增加字段验证
 					this.isLoggedIn = !!(userInfo?.token && userInfo?.id)
 
@@ -185,10 +189,10 @@
 				}
 			},
 			goToLogin() {
-			        uni.navigateTo({
-			          url: '/pages/login/login'
-			        });
-			    },
+				uni.navigateTo({
+					url: '/pages/login/login'
+				});
+			},
 			initPageHeight() {
 				uni.getSystemInfo({
 					success: (res) => {
@@ -288,28 +292,36 @@
 					this.loadmore = '上拉加载更多';
 				}, 2000)
 			},
-			viewLiveInfo(liveCourseId, sorttype) {
-				if (!app.globalData.userinfo) {
-					uni.navigateTo({
-						url: '../login/login'
-					})
-					return;
-				}
-
-				let url = '';
-				switch (sorttype) {
-					case 0:
-						url = `/packageB/pages/content-info/content-info?courseid=${liveCourseId}`;
-						break;
-					case 1:
-						url = `/packageB/pages/courseinfo/courseinfo?courseid=${liveCourseId}`;
-						break;
-					default:
-						url = `/packageB/pages/live_course_info/live_course_info?courseid=${liveCourseId}`;
-				}
-				console.log(url)
-				uni.navigateTo({
-					url
+			viewLiveInfo(item) {
+				let gData = app.globalData;
+				uni.request({
+					url: gData.site_url + 'Course.GetDetail',
+					method: 'GET',
+					data: {
+						'uid': gData.userinfo.id,
+						'token': gData.userinfo.token,
+						'courseid': item.id
+					},
+					success: res => {
+						if (!res.data || !res.data.data) {
+							uni.showToast({ title: '数据异常', icon: 'none' });
+							return;
+						}
+						if (res.data.data.code != 0) {
+							uni.navigateTo({ url: '../../../pages/login/login' });
+							return;
+						}
+						let info = res.data.data.info[0] || {};
+						if (info.type == 7) {
+							uni.showToast({ title: '白板直播暂未接入', icon: 'none' });
+						} else {
+							// 拼接和分享一样的参数
+							const sharer_id = gData.userinfo.id;
+							uni.navigateTo({
+								url: `../../packageB/pages/live-info/live-infoplay?sharer_id=${sharer_id}&liveuid=${info.uid}&courseid=${info.id}&lessonid=0&thumb=${encodeURIComponent(info.thumb || '')}`
+							});
+						}
+					}
 				});
 			},
 			getnums() {
@@ -376,7 +388,8 @@
 
 				if (res.from === 'button' && this.currentShareItem) {
 					let path = '';
-					path = `packageB/pages/live_course_info/live_course_info?courseid=${this.currentShareItem.id}`;
+					path =
+						`packageB/pages/live_course_info/live_course_info?courseid=${this.currentShareItem.id}`;
 					path =
 						`packageB/pages/live-info/live-infoplay?sharer_id=${app.globalData.userinfo.id}&liveuid=${this.currentShareItem.uid}&courseid=${this.currentShareItem.id}&lessonid=0&thumb=${this.currentShareItem.thumb}`;
 					return {
@@ -689,7 +702,8 @@
 		display: inline-block;
 	}
 
-	.share-button {
+	.share-button,
+	.watch-button {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -701,14 +715,20 @@
 		transition: all 0.2s;
 	}
 
-	.share-button:active {
+	.share-button:active,
+	.watch-button:active {
 		background-color: #eee;
 		transform: scale(0.95);
 	}
 
-	.share-button .iconfont {
+	.share-button .iconfont,
+	.watch-button .iconfont {
 		margin-right: 6rpx;
 		font-size: 24rpx;
+	}
+
+	.watch-button {
+		margin-left: 15px;
 	}
 
 	/* 自定义导航栏 */

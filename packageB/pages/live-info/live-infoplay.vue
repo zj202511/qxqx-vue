@@ -1371,6 +1371,7 @@
 						'uid': gData.userinfo.id,
 					},
 					success: res => {
+						console.log(res)
 						if (res.data.data.code == 700) {
 							this.isLoggedIn = false;
 							uni.navigateTo({

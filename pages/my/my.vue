@@ -199,32 +199,14 @@
 					month: 0,
 					total: 0
 				},
-				menu: [{
-						label: '分享内容',
-						icon: '../../static/images/icon7.png',
-						url: '../course/course'
-					},
-					{
-						label: '查看记录',
-						icon: '../../static/images/icon4.png',
-						url: '../hasbuy/hasbuy'
-					},
-					{
-						label: '意见反馈',
-						icon: '../../static/images/icon1.png',
-						url: '../yijian-fankui/yijian-fankui'
-					},
-					{
-						label: '关于我们',
-						icon: '../../static/images/icon2.png',
-						url: '../lianxi-we/lianxi-we'
-					},
-					{
-						label: '设置',
-						icon: '../../static/images/icon5.png',
-						url: '../setting/setting'
-					}
+				fullMenu: [
+					{ label: '视频中心', icon: '../../static/images/icon7.png', url: '../course/course', key: 'share' },
+					{ label: '查看记录', icon: '../../static/images/icon4.png', url: '../hasbuy/hasbuy', key: 'record' },
+					{ label: '意见反馈', icon: '../../static/images/icon1.png', url: '../yijian-fankui/yijian-fankui', key: 'feedback' },
+					{ label: '关于我们', icon: '../../static/images/icon2.png', url: '../lianxi-we/lianxi-we', key: 'about' },
+					{ label: '设置', icon: '../../static/images/icon5.png', url: '../setting/setting', key: 'setting' }
 				],
+				menu: [],
 				list: [],
 				favnums: 0,
 				follows: 0,
@@ -358,6 +340,8 @@
 						if (parseInt(res.data.data.code) !== 0) {
 							return;
 						}
+						
+						console.log(res)
 
 						this.favnums = res.data.data.info[0].favnums;
 						this.follows = res.data.data.info[0].follows;
@@ -368,6 +352,13 @@
 						this.integral = res.data.data.info[0].integral;
 						this.list = res.data.data.info[0].list;
 						this.userInfo = res.data.data.info[0];
+
+						// type为"0"时，过滤掉分享内容和查看记录
+						if (this.userInfo.type === "0") {
+							this.menu = this.fullMenu.filter(item => item.key !== 'record');
+						} else {
+							this.menu = [...this.fullMenu];
+						}
 
 						this.stats.month = res.data.data.info[0].monthCount;
 						this.stats.today  = res.data.data.info[0].todayCount;
