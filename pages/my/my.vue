@@ -200,7 +200,7 @@
 					total: 0
 				},
 				menu: [{
-						label: '分享内容',
+						label: '视频中心',
 						icon: '../../static/images/icon7.png',
 						url: '../course/course'
 					},
