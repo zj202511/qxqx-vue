@@ -97,7 +97,7 @@
 			const isLoggedIn = uni.getStorageSync('isLoggedIn');
 			const userinfo = uni.getStorageSync('userinfo');
 
-			if (isLoggedIn && token) {
+			if (isLoggedIn) {
 				// 如果有token，可以在这里验证token是否过期
 				// 如果token有效，恢复登录状态
 				this.globalData.userinfo = userinfo;
@@ -105,7 +105,7 @@
 
 				// 如果需要，可以在这里发送请求验证token有效性
 			}
-
+			console.log(this.globalData)
 		},
 		onLoad() {
 
