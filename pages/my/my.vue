@@ -120,17 +120,12 @@
 		<!-- 点击列表页 -->
 		<!-- 功能入口 -->
 		<view class="grid">
-    <view
-      v-for="(item, index) in menu"
-      :key="index"
-      class="grid-item"
-      @click="onMenuClick(item)"
-    >
-      <image :src="item.icon" class="grid-icon" />
-      <view class="grid-label">{{ item.label }}</view>
-      <view v-if="item.badge" class="badge">{{ item.badge }}</view>
-    </view>
-  </view>
+			<view v-for="(item, index) in menu" :key="index" class="grid-item" @click="onMenuClick(item)">
+				<image :src="item.icon" class="grid-icon" />
+				<view class="grid-label">{{ item.label }}</view>
+				<view v-if="item.badge" class="badge">{{ item.badge }}</view>
+			</view>
+		</view>
 		<!-- <view class="mybox_3">
 			<ul style="list-style-type:none">
 				<li>
@@ -199,14 +194,37 @@
 					month: 0,
 					total: 0
 				},
-<<<<<<< HEAD
-				fullMenu: [
-					{ label: '视频中心', icon: '../../static/images/icon7.png', url: '../course/course', key: 'share' },
-					{ label: '查看记录', icon: '../../static/images/icon4.png', url: '../hasbuy/hasbuy', key: 'record' },
-					{ label: '意见反馈', icon: '../../static/images/icon1.png', url: '../yijian-fankui/yijian-fankui', key: 'feedback' },
-					{ label: '关于我们', icon: '../../static/images/icon2.png', url: '../lianxi-we/lianxi-we', key: 'about' },
-					{ label: '设置', icon: '../../static/images/icon5.png', url: '../setting/setting', key: 'setting' }
-=======
+				fullMenu: [{
+						label: '视频中心',
+						icon: '../../static/images/icon7.png',
+						url: '../course/course',
+						key: 'share'
+					},
+					{
+						label: '查看记录',
+						icon: '../../static/images/icon4.png',
+						url: '../hasbuy/hasbuy',
+						key: 'record'
+					},
+					{
+						label: '意见反馈',
+						icon: '../../static/images/icon1.png',
+						url: '../yijian-fankui/yijian-fankui',
+						key: 'feedback'
+					},
+					{
+						label: '关于我们',
+						icon: '../../static/images/icon2.png',
+						url: '../lianxi-we/lianxi-we',
+						key: 'about'
+					},
+					{
+						label: '设置',
+						icon: '../../static/images/icon5.png',
+						url: '../setting/setting',
+						key: 'setting'
+					},
+				],
 				menu: [{
 						label: '视频中心',
 						icon: '../../static/images/icon7.png',
@@ -232,7 +250,6 @@
 						icon: '../../static/images/icon5.png',
 						url: '../setting/setting'
 					}
->>>>>>> 746cf14649d487197d77c4d0507f50edadc5227b
 				],
 				menu: [],
 				list: [],
@@ -248,12 +265,12 @@
 		},
 
 		onLoad() {
-		//	if (app.globalData.userinfo == '') {
-		//		uni.navigateTo({
-		//			url: '../login/login'
-		//		})
-		//		return;
-		//	}
+			//	if (app.globalData.userinfo == '') {
+			//		uni.navigateTo({
+			//			url: '../login/login'
+			//		})
+			//		return;
+			//	}
 			this.getinfo();
 		},
 		onShow() {
@@ -368,7 +385,7 @@
 						if (parseInt(res.data.data.code) !== 0) {
 							return;
 						}
-						
+
 						console.log(res)
 
 						this.favnums = res.data.data.info[0].favnums;
@@ -389,7 +406,7 @@
 						}
 
 						this.stats.month = res.data.data.info[0].monthCount;
-						this.stats.today  = res.data.data.info[0].todayCount;
+						this.stats.today = res.data.data.info[0].todayCount;
 						this.stats.total = res.data.data.info[0].allCount;
 						if (res.data.data.info[0].type == '1') {
 							//讲师

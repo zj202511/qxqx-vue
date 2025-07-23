@@ -1,6 +1,10 @@
 <template>
 	<view>
 		<view class="live-all-wrap">
+			<!-- 返回按钮，仅当userInfo.type不为0或'0'时显示 -->
+			<view v-if="showBackBtn" class="custom-back-btn" @click="backCourseList">
+				<image src="../../static/navi_backImg_white.png" class="custom-back-img" mode="aspectFit" />
+			</view>
 			<!-- 顶部主播信息栏 -->
 			<view class="tiktok-topbar">
 				<image class="tiktok-avatar" src="../../static/avatar.png" mode="aspectFill" />
@@ -8,7 +12,7 @@
 					<text class="tiktok-anchor-name"></text>
 					<text class="tiktok-anchor-stats"></text>
 				</view>
-				<view class="tiktok-follow-btn">关注</view>
+				<!-- <view class="tiktok-follow-btn">关注</view> -->
 			</view>
 			<template v-if="showsmallvideo == true">
 				<view class="small-video">
@@ -65,8 +69,8 @@
 					<view class="nothing" v-if="zhibo_leave == true">
 						<image v-if="show_nothing_image == true" class="nothing_image_H"
 							src="../../static/zanshilikai.png" mode="aspectFit"></image>
-						<view v-if="show_nothing_image == true" class="zanshilikai_txt_H">{{zhibo_leave_text}}</view>
-						<view v-if="show_nothing_image == true" class="zanshilikai_txt_H_H">{{zhibo_leave_text_w}}
+						<view v-if="show_nothing_image == true" class="zanshilikai_txt_H">{{ zhibo_leave_text }}</view>
+						<view v-if="show_nothing_image == true" class="zanshilikai_txt_H_H">{{ zhibo_leave_text_w }}
 						</view>
 						<view v-if="show_nothing_image2 == true" class="zanshilikai_txt2_H">直播已结束</view>
 					</view>
@@ -74,12 +78,17 @@
 			</template>
 			<template v-else-if="livetype == 2">
 				<view class="video-container">
-					<video id="liveVideo" class="video-element" :src="pull" :autoplay="true" :controls="false"
-						:style="videoStyle" @ended="onVideoEnded" @error="onVideoError"
-						x5-video-player-fullscreen="true" x5-playsinline="true" playsinline webkit-playsinline></video>
 
+					<video id="liveVideo" class="video-element" :src="pull" :autoplay="true" :controls="true"
+						:style="videoStyle" @ended="onVideoEnded" @error="onVideoError" @timeupdate="onTimeUpdate"
+						@loadedmetadata="onLoadedMetadata" x5-video-player-fullscreen="true" x5-playsinline="true"
+						playsinline webkit-playsinline></video>
 					<view v-if="showEndScreen" class="end-screen">
-						<text>直播已结束</text>
+						<!-- 左上角返回按钮，仅当showBackBtn为true时显示 -->
+						<view v-if="showBackBtn" class="custom-back-btn video-back-btn" @click="backCourseList">
+							<image src="../../static/navi_backImg_white.png" class="custom-back-img" mode="aspectFit" />
+						</view>
+						<text>视频已结束</text>
 					</view>
 				</view>
 			</template>
@@ -96,10 +105,10 @@
 			<template v-else-if="livetype == 4 || livetype == 1">
 				<template v-if="noppt == false">
 					<swiper class="video-wrap swiper-no-swiping" :current="pptindex">
-						<swiper-item v-for="(item,index) in ppts" :key="index" class="video-wrap" @touchmove.stop>
+						<swiper-item v-for="(item, index) in ppts" :key="index" class="video-wrap" @touchmove.stop>
 							<image @click="showBigView(index)" :src="item.thumb" mode="aspectFit" class="pptimage">
 							</image>
-							<view class="pptnum">{{showppt_index +'/'+ppts.length}}</view>
+							<view class="pptnum">{{ showppt_index + '/' + ppts.length }}</view>
 						</swiper-item>
 					</swiper>
 				</template>
@@ -115,41 +124,41 @@
 			</template>
 			<view class="livestatus" style="display: none;">
 				<view class="dian" :style="'background-color :' + diancolor"></view>
-				<view class="islive">{{islive}}</view>
+				<view class="islive">{{ islive }}</view>
 				<view class="xian"></view>
-				<view class="Usercount">{{Usercount + '人'}}</view>
+				<view class="Usercount">{{ Usercount + '人' }}</view>
 			</view>
 			<view style="background-color: #FFFFFF; height: 90rpx;display: none;"
 				class="flex align-center justify-center font-weight-bold course-tab">
 				<view class="mx-5" @click="changeXXK(index)" v-for="(item, index) in tabBars" :key="index"
 					:class="tabIndex === index ? 'text-main font-md' : 'font-md text-light-muted'">
-					{{item.name}}
+					{{ item.name }}
 				</view>
 			</view>
-			<swiper class="swiper-box" :current="tabIndex" @change="onChangeTab" :style="{height : scrollH + 'rpx'}"
+			<swiper class="swiper-box" :current="tabIndex" @change="onChangeTab" :style="{ height: scrollH + 'rpx' }"
 				style="width: 100%;background-color: #F4F5F6;">
 				<swiper-item>
-					<scroll-view :style="{height : scrollH - 130+ 'rpx'}" class="scroll1" scroll-y="true"
+					<scroll-view :style="{ height: scrollH - 130 + 'rpx' }" class="scroll1" scroll-y="true"
 						:scroll-into-view="scrollInto" scroll-with-animation style="position: absolute;left:0; top: 400; 
 			        right: 0; bottom: 10rrpx;">
 						<view class="zhinanview" style="display: none;">
 							<text class="zhinantext">听课指南</text>
-							<text class="intr">{{intr}}</text>
+							<text class="intr">{{ intr }}</text>
 						</view>
-						<block v-for="(item,index) in list" :key="index">
-							<view v-if="item.user_type == 1" :id="'chat' +index" class="messagebottom">
+						<block v-for="(item, index) in list" :key="index">
+							<view v-if="item.user_type == 1" :id="'chat' + index" class="messagebottom">
 								<image :src="item.avatar" class="rounded" mode="aspectFill"></image>
 								<view class="message">
 									<view class="jiangshiview">
-										<text class="user_nickname">{{item.user_nickname}}</text>
+										<text class="user_nickname">{{ item.user_nickname }}</text>
 										<view class="jiangshi">讲师</view>
 									</view>
 									<rich-text v-show="item.type == 0" class="textmessage2"
 										:nodes="item.content"></rich-text>
-									<view @click="open_voice(item.url,index)" v-show="item.type == 1"
+									<view @click="open_voice(item.url, index)" v-show="item.type == 1"
 										class="textmessage2_voice">
 										<image :ref="('voice_' + index)" :src="voice_list[index]" class="voice"></image>
-										<view class="voice_time">{{item.length + 's'}}</view>
+										<view class="voice_time">{{ item.length + 's' }}</view>
 									</view>
 								</view>
 								<text v-if="item.status == '1'" class="wen2">问</text>
@@ -159,22 +168,22 @@
 					</scroll-view>
 				</swiper-item>
 				<swiper-item>
-					<scroll-view :style="{height : scrollH - 130 + 'rpx'}" class="scroll1" scroll-y="true"
+					<scroll-view :style="{ height: scrollH - 130 + 'rpx' }" class="scroll1" scroll-y="true"
 						:scroll-into-view="scrollInto" scroll-with-animation style="position: absolute;left:0; top: 400; 
 			        right: 0; bottom: 10rrpx; ">
-						<block v-for="(item,index) in list" :key="index">
+						<block v-for="(item, index) in list" :key="index">
 							<template v-if="item.uid === myID">
-								<view :id="'chat' +index" class="messagebottom2">
+								<view :id="'chat' + index" class="messagebottom2">
 									<image :src="item.avatar" class="rounded2" mode="aspectFill"></image>
 									<view class="message">
-										<text class="user_nickname2">{{item.user_nickname}}</text>
+										<text class="user_nickname2">{{ item.user_nickname }}</text>
 										<rich-text v-show="item.type == 0" class="textmessage" :nodes="item.content"
 											space="nbsp"></rich-text>
-										<view @click="open_voice(item.url,index)" v-show="item.type == 1"
+										<view @click="open_voice(item.url, index)" v-show="item.type == 1"
 											class="textmessage2_voice_my_my">
 											<image :ref="('voice_' + index)" :src="voice_list[index]" class="voice_my">
 											</image>
-											<view class="voice_time">{{item.length + 's'}}</view>
+											<view class="voice_time">{{ item.length + 's' }}</view>
 										</view>
 									</view>
 									<text v-if="item.status == '1'" class="wen">问</text>
@@ -182,25 +191,25 @@
 								</view>
 							</template>
 							<template v-else>
-								<view :id="'chat' +index" class="messagebottom">
+								<view :id="'chat' + index" class="messagebottom">
 									<image :src="item.avatar" class="rounded" mode="aspectFill"></image>
 									<view class="message">
 										<template v-if="item.user_type == 1 || liveInfo.liveuid == item.uid">
 											<view class="jiangshiview">
-												<text class="user_nickname">{{item.user_nickname}}</text>
+												<text class="user_nickname">{{ item.user_nickname }}</text>
 												<view class="jiangshi">讲师</view>
 											</view>
 										</template>
 										<template v-else>
-											<text class="user_nickname">{{item.user_nickname}}</text>
+											<text class="user_nickname">{{ item.user_nickname }}</text>
 										</template>
 										<rich-text v-show="item.type == 0" class="textmessage2"
 											:nodes="item.content"></rich-text>
-										<view @click="open_voice(item.url,index)" v-show="item.type == 1"
+										<view @click="open_voice(item.url, index)" v-show="item.type == 1"
 											class="textmessage2_voice">
 											<image :ref="('voice_' + index)" :src="voice_list[index]" class="voice">
 											</image>
-											<view class="voice_time">{{item.length + 's'}}</view>
+											<view class="voice_time">{{ item.length + 's' }}</view>
 										</view>
 									</view>
 									<text v-if="item.status == '1'" class="wen2">问</text>
@@ -211,22 +220,22 @@
 					</scroll-view>
 				</swiper-item>
 				<swiper-item>
-					<scroll-view :style="{height : scrollH + 'rpx'}" class="scroll1" scroll-y="true"
+					<scroll-view :style="{ height: scrollH + 'rpx' }" class="scroll1" scroll-y="true"
 						:scroll-into-view="scrollInto" scroll-with-animation style="position: absolute;left:0; top: 400; 
 				    right: 0; bottom: 10rrpx; ">
-						<block v-for="(item,index) in list" :key="index">
+						<block v-for="(item, index) in list" :key="index">
 							<template v-if="item.uid === myID">
-								<view v-if="item.status == '1'" :id="'chat' +index" class="messagebottom2">
+								<view v-if="item.status == '1'" :id="'chat' + index" class="messagebottom2">
 									<image :src="item.avatar" class="rounded2" mode="aspectFill"></image>
 									<view class="message">
-										<text class="user_nickname2">{{item.user_nickname}}</text>
+										<text class="user_nickname2">{{ item.user_nickname }}</text>
 										<rich-text class="textmessage" :nodes="item.content"
 											v-show="item.type == 0"></rich-text>
-										<view @click="open_voice(item.url,index)" v-show="item.type == 1"
+										<view @click="open_voice(item.url, index)" v-show="item.type == 1"
 											class="textmessage2_voice_my_my">
 											<image :ref="('voice_' + index)" :src="voice_list[index]" class="voice_my">
 											</image>
-											<view class="voice_time">{{item.length + 's'}}</view>
+											<view class="voice_time">{{ item.length + 's' }}</view>
 										</view>
 									</view>
 									<text v-if="item.status == '1'" class="wen">问</text>
@@ -234,26 +243,26 @@
 								</view>
 							</template>
 							<template v-else>
-								<view v-if="item.status == '1' || item.status == '2'" :id="'chat' +index"
+								<view v-if="item.status == '1' || item.status == '2'" :id="'chat' + index"
 									class="messagebottom">
 									<image :src="item.avatar" class="rounded" mode="aspectFill"></image>
 									<view class="message">
 										<template v-if="item.user_type == 1 || liveInfo.liveuid == item.uid">
 											<view class="jiangshiview">
-												<text class="user_nickname">{{item.user_nickname}}</text>
+												<text class="user_nickname">{{ item.user_nickname }}</text>
 												<view class="jiangshi">讲师</view>
 											</view>
 										</template>
 										<template v-else>
-											<text class="user_nickname">{{item.user_nickname}}</text>
+											<text class="user_nickname">{{ item.user_nickname }}</text>
 										</template>
 										<rich-text v-show="item.type == 0" class="textmessage2"
 											:nodes="item.content"></rich-text>
-										<view @click="open_voice(item.url,index)" v-show="item.type == 1"
+										<view @click="open_voice(item.url, index)" v-show="item.type == 1"
 											class="textmessage2_voice">
 											<image :ref="('voice_' + index)" :src="voice_list[index]" class="voice">
 											</image>
-											<view class="voice_time">{{item.length + 's'}}</view>
+											<view class="voice_time">{{ item.length + 's' }}</view>
 										</view>
 									</view>
 									<text v-if="item.status == '1'" class="wen2">问</text>
@@ -264,55 +273,19 @@
 					</scroll-view>
 				</swiper-item>
 			</swiper>
-			<template v-if="tabIndex != 2">
-				<view class="inputbottom" :style="'bottom:' + inputbuttom +'px'">
-					<view class="inputclass">
-						<image class="sendemojy" @click="submitemojy" src="../../static/chat_face.png"></image>
-						<!-- #ifdef MP-WEIXIN -->
-						<image class="sendvoice" @click="sendvoice" :src="chat_voice" style="display: none;"></image>
-						<!-- #endif -->
-						<view @touchstart.stop.prevent="startVoice" @touchmove.stop.prevent="moveVoice"
-							@touchend.stop="endVoice" @touchcancel.stop="cancelVoice" class="inputborder"
-							v-if="isvoice == true" style="color: #969696;text-align: center; line-height: 80rpx;">
-							{{voiceTitle}}
-						</view>
-						<view class="inputborder" v-if="isvoice == false">
-							<input :disabled="isshut == false ? false:true" :adjust-position="false" ref="input1"
-								hold-keyboard='true' confirm-type="send" @keyup.enter='send' @confirm="send"
-								v-model="content" class="input" :placeholder="shut_place"  />
-							<view class="wen-btn-wrap" style="display: none;">
-								<view @click="question" class="duihao-wrap">
-									<image v-if="isQue == true" class="duihao-img" src="../../static/jinyan_sel.png"
-										mode="aspectFill"></image>
-									<image v-if="isQue == false" class="duihao-img"
-										src="../../static/images/questionno.png" mode="aspectFill"></image>
-								</view>
-								<text class="tiwen">提问</text>
-							</view>
-						</view>
-					</view>
-					<!-- 新增喜欢/收藏按钮 -->
-					<view class="input-action-group">
-						<image class="like-btn" src="../../static/like.png" @click="onLike" />
-						<image class="fav-btn" src="../../static/fav.png" @click="onFav" />
-					</view>
-				</view>
-				<emojy v-show="showemojy == true" class='emojy' @songemojy='songemojy' @new_sendemojy='new_sendemojy'>
-				</emojy>
-			</template>
 			<swiper :current="show_big_ppt_index2" v-show="show_big_ppt == true" class="big_swiper"
 				@change="big_change">
-				<swiper-item v-for="(item,index) in ppts" :key="index" class="big_swiper_item">
+				<swiper-item v-for="(item, index) in ppts" :key="index" class="big_swiper_item">
 					<image :src="item.thumb" mode="aspectFit" class="big_swiper_item_image"></image>
 					<view class="row">
 					</view>
 				</swiper-item>
 			</swiper>
-			<view v-show="show_big_ppt == true" :style="'top:' + system_ppt_top +'px;'" class="big_pptnum">
-				{{show_big_ppt_index +'/'+ppts.length}}
+			<view v-show="show_big_ppt == true" :style="'top:' + system_ppt_top + 'px;'" class="big_pptnum">
+				{{ show_big_ppt_index + '/' + ppts.length }}
 			</view>
 			<view v-show="show_big_ppt == true" @click="big_ppt_back" class="ppt_big_back_big"></view>
-			<image v-show="show_big_ppt == true" @click="big_ppt_back" :style="'top:' + system_ppt_top +'px;'"
+			<image v-show="show_big_ppt == true" @click="big_ppt_back" :style="'top:' + system_ppt_top + 'px;'"
 				mode="aspectFit" class="ppt_big_back" src="../../static/navi_backImg_white.png"></image>
 			<view class="voice_an" v-if="recording == true">
 				<image v-if="voiceimagestatus == false" class="voice_an_image" src="../../static/RecordCancel@2x.png"
@@ -324,895 +297,814 @@
 				<image  :animation="num==4?showpic:hidepic" v-if="voiceimagestatus == true" class="voice_an_image2" src="../../static/RecordingSignal005@2x.png" mode="aspectFit"></image> -->
 				<image v-if="voiceimagestatus == true" class="voice_an_image2"
 					src="../../static/RecordingSignal006@2x.png" mode="aspectFit"></image>
-				<view class="text">{{voiceIconText}}</view>
+				<view class="text">{{ voiceIconText }}</view>
 			</view>
 		</view>
 	</view>
 </template>
 <script>
-	import qiniuUploader from '../../../qiniuUploader.js';
-	import uniNavBar from '@/components/uni-ui/uni-nav-bar/uni-nav-bar.vue';
-	import imtAudio from '@/components/imt-audio/imt-audio.vue';
-	import unisocket from './uniapp.socketio.js';
-	import md5_js from "../../../static/js/md53.js";
-	// #ifdef H5
-	import AgoraRTCH5 from "./AgoraRTCSDK-3.0.1.js";
-	// #endif
-	// #ifdef MP-WEIXIN
-	import AogoraWechat from "./Agora_Miniapp_SDK_for_WeChat.js";
-	// #endif
-	import Emojy from '@/packageB/emojy/emojy.vue';
-	const app = getApp();
-	var socket = '';
-	var wechatAgora = '';
-	let H5Client = '';
-	export default {
-		components: {
-			uniNavBar,
-			Emojy,
-			imtAudio
-		},
-		data() {
-			return {
-				livemode: 0,
-				fromPPt: false,
-				fromshare: false,
-				ShareScreenUid: 999999999,
-				Recorder: uni.getRecorderManager(),
-				chat_audio: uni.createInnerAudioContext(),
-				recording: false, //标识是否正在录音
-				isStopVoice: false, //加锁 防止点击过快引起的当录音正在准备(还没有开始录音)的时候,却调用了stop方法但并不能阻止录音的问题
-				voiceInterval: null,
-				voiceTime: 0, //总共录音时长
-				canSend: true, //是否可以发送
-				PointY: 0, //坐标位置
-				voiceIconText: "正在录音...",
-				voiceimagestatus: true,
-				voiceTitle: '按住说话',
-				chat_voice: "../../static/chat_voice@3x.png",
-				isvoice: false,
-				show_big_ppt: false,
-				scrollH: 0,
-				system_ppt_top: 0,
-				tabIndex: 0,
-				tabBars: [{
-					name: "讨论区"
-				}],
-				scrollInto: "",
-				scrollTop: "",
-				list: [],
-				isConnectSocket: false, //是否连接socket
-				liveInfo: {
-					'liveuid': '',
-					'courseid': '',
-					'lessonid': '',
-					'sharer_id': '',
-				},
-				userInfo: {
-					'user_type':0
-				},
-				isQue: false,
-				//直播添加
-				agoraappid: '',
-				agoramRoomName: '',
-				agorauid: '',
-				phonetype: 0,
-				wechatliveurl: '',
-				res_url: '',
-				wechatliveurl_small: '',
-				myID: '',
-				content: '',
-				islive: '已结束',
-				Usercount: 0,
-				diancolor: '#969696',
-				timer: '',
-				livetype: '',
-				intr: '',
-				pull: '',
-				thumb: '',
-				duration: '',
-				currentTime: 0,
-				videoContext: '',
-				buttonimage: '',
-				status: 1,
-				start: '',
-				end: '',
-				ppts: [],
-				noppt: false,
-				pptindex: 0,
-				showppt_index: 0,
-				show_big_ppt_index: 1,
-				show_big_ppt_index2: 0,
-				emojylist: [],
-				showemojy: false,
-				inputbuttom: 0,
-				shut_place: "我来说几句~",
-				isshut: false,
-				shownothingVideo: false,
-				zhibo_leave: false,
-				zhibo_leave_text: '老师暂时离开',
-				zhibo_leave_text_w: '精彩稍后继续',
-				show_nothing_image: true,
-				show_nothing_image2: false,
-				input_adjust: false,
-				video_zhezhao: true,
-				voice_list: [],
-				intervl: '',
-				voice_index: -1,
-				QiNiutoken: '',
-				voice_url: '',
-				voice_length: '',
-				animation: [],
-				showpic: '',
-				hidepic: '',
-				setInter1: '',
-				num: 0,
-				picmaxnum: 6,
-				isaudioerror: false,
-				showsmallvideo: false,
-				showShareScreen: false,
-				showBigScreen: true,
-				showEndScreen: false,
-				watchDuration: 0, // 观看总时长（秒）
-				watchTimer: null, // 定时器句柄
-				sharer_id: '', // 新增
-				isLoggedIn: false,
+import qiniuUploader from '../../../qiniuUploader.js';
+import uniNavBar from '@/components/uni-ui/uni-nav-bar/uni-nav-bar.vue';
+import imtAudio from '@/components/imt-audio/imt-audio.vue';
+import unisocket from './uniapp.socketio.js';
+import md5_js from "../../../static/js/md53.js";
+// #ifdef H5
+import AgoraRTCH5 from "./AgoraRTCSDK-3.0.1.js";
+// #endif
+// #ifdef MP-WEIXIN
+import AogoraWechat from "./Agora_Miniapp_SDK_for_WeChat.js";
+// #endif
+import Emojy from '@/packageB/emojy/emojy.vue';
+const app = getApp();
+var socket = '';
+var wechatAgora = '';
+let H5Client = '';
+export default {
+	components: {
+		uniNavBar,
+		Emojy,
+		imtAudio
+	},
+	data() {
+		return {
+			livemode: 0,
+			fromPPt: false,
+			fromshare: false,
+			ShareScreenUid: 999999999,
+			Recorder: uni.getRecorderManager(),
+			chat_audio: uni.createInnerAudioContext(),
+			recording: false, //标识是否正在录音
+			isStopVoice: false, //加锁 防止点击过快引起的当录音正在准备(还没有开始录音)的时候,却调用了stop方法但并不能阻止录音的问题
+			voiceInterval: null,
+			voiceTime: 0, //总共录音时长
+			canSend: true, //是否可以发送
+			PointY: 0, //坐标位置
+			voiceIconText: "正在录音...",
+			voiceimagestatus: true,
+			voiceTitle: '按住说话',
+			chat_voice: "../../static/chat_voice@3x.png",
+			isvoice: false,
+			show_big_ppt: false,
+			scrollH: 0,
+			system_ppt_top: 0,
+			tabIndex: 0,
+			tabBars: [{
+				name: "讨论区"
+			}],
+			scrollInto: "",
+			scrollTop: "",
+			list: [],
+			isConnectSocket: false, //是否连接socket
+			liveInfo: {
+				'liveuid': '',
+				'courseid': '',
+				'lessonid': '',
+				'sharer_id': '',
+			},
+			userInfo: {
+				'user_type': 0
+			},
+			isQue: false,
+			//直播添加
+			agoraappid: '',
+			agoramRoomName: '',
+			agorauid: '',
+			phonetype: 0,
+			wechatliveurl: '',
+			res_url: '',
+			wechatliveurl_small: '',
+			myID: '',
+			content: '',
+			islive: '已结束',
+			Usercount: 0,
+			diancolor: '#969696',
+			timer: '',
+			livetype: '',
+			intr: '',
+			pull: '',
+			thumb: '',
+			duration: '',
+			currentTime: 0,
+			videoContext: '',
+			buttonimage: '',
+			status: 1,
+			start: '',
+			end: '',
+			ppts: [],
+			noppt: false,
+			pptindex: 0,
+			showppt_index: 0,
+			show_big_ppt_index: 1,
+			show_big_ppt_index2: 0,
+			emojylist: [],
+			showemojy: false,
+			inputbuttom: 0,
+			shut_place: "我来说几句~",
+			isshut: false,
+			shownothingVideo: false,
+			zhibo_leave: false,
+			zhibo_leave_text: '老师暂时离开',
+			zhibo_leave_text_w: '精彩稍后继续',
+			show_nothing_image: true,
+			show_nothing_image2: false,
+			input_adjust: false,
+			video_zhezhao: true,
+			voice_list: [],
+			intervl: '',
+			voice_index: -1,
+			QiNiutoken: '',
+			voice_url: '',
+			voice_length: '',
+			animation: [],
+			showpic: '',
+			hidepic: '',
+			setInter1: '',
+			num: 0,
+			picmaxnum: 6,
+			isaudioerror: false,
+			showsmallvideo: false,
+			showShareScreen: false,
+			showBigScreen: true,
+			showEndScreen: false,
+			watchDuration: 0, // 观看总时长（秒）
+			watchTimer: null, // 定时器句柄
+			sharer_id: '', // 新增
+			isLoggedIn: false,
+			sliderDragging: false,
+			sliderProgress: 0,
+			sliderTime: 0,
+		}
+	},
+	onReady() {
+		var that = this;
+		that.system_ppt_top = 25;
+		uni.getSystemInfo({
+			success: function (res) {
+				that.scrollH = res.windowHeight * 750 / res.windowWidth - 540 - 100;
+				// #ifdef MP-WEIXIN
+				that.system_ppt_top = parseInt(res.safeArea.top) + 10;
+				that.scrollH = res.windowHeight * 750 / res.windowWidth - 550 - 124 - parseInt(res.safeArea
+					.top) - 20;
+				// #endif
+				that.liveLive(that.liveInfo.liveuid, that.liveInfo.courseid, that.liveInfo.lessonid);
 			}
-		},
-		onReady() {
-			var that = this;
-			that.system_ppt_top = 25;
-			uni.getSystemInfo({
-				success: function(res) {
-					that.scrollH = res.windowHeight * 750 / res.windowWidth - 540 - 100;
-					// #ifdef MP-WEIXIN
-					that.system_ppt_top = parseInt(res.safeArea.top) + 10;
-					that.scrollH = res.windowHeight * 750 / res.windowWidth - 550 - 124 - parseInt(res.safeArea
-						.top) - 20;
-					// #endif
-					that.liveLive(that.liveInfo.liveuid, that.liveInfo.courseid, that.liveInfo.lessonid);
+		});
+		// this.pageToBottom();
+	},
+	onUnload() {
+		this.submitWatchDuration();
+		this.stopWatchTimer();
+		this.chat_audio.stop();
+		socket.disconnect();
+		socket.close();
+	},
+	onHide() {
+		this.submitWatchDuration();
+		this.stopWatchTimer();
+	},
+	onLoad(option) {
+		this.saveCurrentUrl();
+
+		// #ifdef MP-WEIXIN
+		console.log("运行在小程序");
+		this.phonetype = 4;
+		// #endif
+		// #ifdef H5
+		console.log("运行在H5");
+		this.phonetype = 3;
+		// #endif
+		// #ifdef APP-PLUS
+		if (uni.getSystemInfoSync().platform === 'android') {
+			// console.log("运行在android");
+			this.phonetype = 1;
+		} else if (uni.getSystemInfoSync().platform === 'ios') {
+			this.phonetype = 2;
+			// console.log("运行在ios");
+		}
+		// #endif
+
+		this.ppts = [];
+		this.userInfo = app.globalData.userinfo;
+		this.liveInfo.liveuid = option.liveuid;
+		this.liveInfo.courseid = option.courseid;
+		this.liveInfo.lessonid = option.lessonid;
+		this.liveInfo.sharer_id = option.sharer_id;
+
+		this.thumb = option.thumb;
+		this.myID = app.globalData.userinfo.id;
+		this.sharer_id = option.sharer_id || '';
+		this.GetChat();
+		uni.onKeyboardHeightChange(res => {
+			if (res.height > 0) {
+				if (this.showemojy == true) {
+					this.showemojy = false;
+					this.inputbuttom = 170;
+				} else {
+					this.inputbuttom = res.height;
 				}
-			});
-			// this.pageToBottom();
-		},
-		onUnload() {
-			this.submitWatchDuration();
-			this.stopWatchTimer();
+			}
+			if (res.height == 0) {
+				if (this.showemojy == true) {
+					this.inputbuttom = 170;
+				} else {
+					this.inputbuttom = 0;
+				}
+			}
+		});
+		//音频播放事件
+		this.chat_audio.onPlay(() => {
+			this.isaudioerror = false;
+			// console.log('开始播放');
+		})
+		this.chat_audio.onStop(() => {
+			this.isaudioerror = false;
+			this.voice_index = -1;
+			// console.log('播放结束-onStop');
+			clearInterval(this.intervl);
+			for (let i = 0; i < this.voice_list.length; i++) {
+				this.voice_list[i] = '../../static/receiver_voice@3x.png';
+				this.$set(this.voice_list, i, this.voice_list[i]);
+			}
+		})
+		//音频结束事件
+		this.chat_audio.onEnded(() => {
+			this.isaudioerror = false;
+			this.voice_index = -1;
+			// console.log('播放结束-onEnded');
+			clearInterval(this.intervl);
+			for (let i = 0; i < this.voice_list.length; i++) {
+				this.voice_list[i] = '../../static/receiver_voice@3x.png';
+				this.$set(this.voice_list, i, this.voice_list[i]);
+			}
+		})
+		this.chat_audio.onError((res) => {
 			this.chat_audio.stop();
-			socket.disconnect();
-			socket.close();
-		},
-		onHide() {
-			this.submitWatchDuration();
-			this.stopWatchTimer();
-		},
-		onLoad(option) {
-			this.saveCurrentUrl();
-			
-			// #ifdef MP-WEIXIN
-			console.log("运行在小程序");
-			this.phonetype = 4;
-			// #endif
-			// #ifdef H5
-			console.log("运行在H5");
-			this.phonetype = 3;
-			// #endif
-			// #ifdef APP-PLUS
-			if (uni.getSystemInfoSync().platform === 'android') {
-				// console.log("运行在android");
-				this.phonetype = 1;
-			} else if (uni.getSystemInfoSync().platform === 'ios') {
-				this.phonetype = 2;
-				// console.log("运行在ios");
+			this.isaudioerror = true;
+			clearInterval(this.intervl);
+			// console.log('播放错误');
+			// console.log(res.errMsg);
+			// console.log(res.errCode);
+		});
+		//录音开始事件
+		this.Recorder.onStart(e => {
+			this.beginVoice();
+		});
+		//录音结束事件
+		this.Recorder.onStop(res => {
+			clearInterval(this.voiceInterval);
+			this.handleRecorder(res);
+		});
+		this.onOrientationChange();
+	},
+	methods: {
+		toggleFullscreen() {
+			const videoContext = uni.createVideoContext('liveVideo');
+			const systemInfo = uni.getSystemInfoSync();
+
+			if (systemInfo.screenWidth > systemInfo.screenHeight) {
+				// 已经是横屏，退出全屏
+				videoContext.exitFullScreen();
+			} else {
+				// 竖屏进入横屏
+				videoContext.requestFullScreen({
+					direction: 90 // 横屏方向
+				});
 			}
-			// #endif
-
-			this.ppts = [];
-			this.userInfo = app.globalData.userinfo;
-			this.liveInfo.liveuid = option.liveuid;
-			this.liveInfo.courseid = option.courseid;
-			this.liveInfo.lessonid = option.lessonid;
-			this.liveInfo.sharer_id = option.sharer_id;
-
-			this.thumb = option.thumb;
-			this.myID = app.globalData.userinfo.id;
-			this.sharer_id = option.sharer_id || '';
-			this.GetChat();
-			uni.onKeyboardHeightChange(res => {
-				if (res.height > 0) {
-					if (this.showemojy == true) {
-						this.showemojy = false;
-						this.inputbuttom = 170;
-					} else {
-						this.inputbuttom = res.height;
-					}
-				}
-				if (res.height == 0) {
-					if (this.showemojy == true) {
-						this.inputbuttom = 170;
-					} else {
-						this.inputbuttom = 0;
-					}
-				}
-			});
-			//音频播放事件
-			this.chat_audio.onPlay(() => {
-				this.isaudioerror = false;
-				// console.log('开始播放');
-			})
-			this.chat_audio.onStop(() => {
-				this.isaudioerror = false;
-				this.voice_index = -1;
-				// console.log('播放结束-onStop');
-				clearInterval(this.intervl);
-				for (let i = 0; i < this.voice_list.length; i++) {
-					this.voice_list[i] = '../../static/receiver_voice@3x.png';
-					this.$set(this.voice_list, i, this.voice_list[i]);
-				}
-			})
-			//音频结束事件
-			this.chat_audio.onEnded(() => {
-				this.isaudioerror = false;
-				this.voice_index = -1;
-				// console.log('播放结束-onEnded');
-				clearInterval(this.intervl);
-				for (let i = 0; i < this.voice_list.length; i++) {
-					this.voice_list[i] = '../../static/receiver_voice@3x.png';
-					this.$set(this.voice_list, i, this.voice_list[i]);
-				}
-			})
-			this.chat_audio.onError((res) => {
-				this.chat_audio.stop();
-				this.isaudioerror = true;
-				clearInterval(this.intervl);
-				// console.log('播放错误');
-				// console.log(res.errMsg);
-				// console.log(res.errCode);
-			});
-			//录音开始事件
-			this.Recorder.onStart(e => {
-				this.beginVoice();
-			});
-			//录音结束事件
-			this.Recorder.onStop(res => {
-				clearInterval(this.voiceInterval);
-				this.handleRecorder(res);
-			});
-			this.onOrientationChange();
 		},
-		methods: {
-			toggleFullscreen() {
-				const videoContext = uni.createVideoContext('liveVideo');
-				const systemInfo = uni.getSystemInfoSync();
 
-				if (systemInfo.screenWidth > systemInfo.screenHeight) {
-					// 已经是横屏，退出全屏
-					videoContext.exitFullScreen();
-				} else {
-					// 竖屏进入横屏
-					videoContext.requestFullScreen({
-						direction: 90 // 横屏方向
-					});
+		// 监听横竖屏变化
+		onOrientationChange() {
+			uni.onWindowResize((res) => {
+				if (res.deviceOrientation === 'landscape') {
+					this.$forceUpdate(); // 强制重新计算样式
 				}
-			},
+			});
+		},
+		videoStyle() {
+			const systemInfo = uni.getSystemInfoSync();
+			const isLandscape = systemInfo.windowWidth > systemInfo.windowHeight;
 
-			// 监听横竖屏变化
-			onOrientationChange() {
-				uni.onWindowResize((res) => {
-					if (res.deviceOrientation === 'landscape') {
-						this.$forceUpdate(); // 强制重新计算样式
-					}
+			return {
+				width: isLandscape ? '177.78vh' : '100vw',
+				height: isLandscape ? '100vh' : '56.25vw',
+				objectFit: 'contain'
+			}
+		},
+		calculatedHeight() {
+			// 根据设备宽高比动态计算（示例：16:9比例）
+			const screenWidth = uni.getSystemInfoSync().screenWidth
+			return (screenWidth * 9) / 16
+		},
+		saveCurrentUrl() {
+			let pages = getCurrentPages();
+			let currentPage = pages[pages.length - 1];
+			let route = currentPage.route;
+			let options = currentPage.options;
+
+			let queryStr = Object.keys(options).map(k => `${k}=${options[k]}`).join('&');
+			let fullPath = '/' + route + (queryStr ? '?' + queryStr : '');
+
+			console.log('当前访问地址:', fullPath);
+			app.globalData.login_jump.page = fullPath;
+		},
+		stopPic() {
+			clearInterval(this.setInter1);
+		},
+		onVideoEnded() {
+			this.showEndScreen = true; // 延迟避免事件阻塞
+			this.stopWatchTimer();
+			console.log('视频播放完毕');
+			//	uni.hideLoading() // 隐藏可能的加载提示
+		},
+		// 开始计时（含5秒自动提交）
+		tartWatchTimer() {
+			if (this.watchTimer) clearInterval(this.watchTimer);
+			if (this.submitTimer) clearInterval(this.submitTimer); // 清除旧定时器
+
+			//this.watchDuration = 0;
+
+			// 1. 每秒计时
+			this.watchTimer = setInterval(() => {
+				this.watchDuration += 1;
+			}, 1000);
+
+			// 2. 每5秒自动提交
+			this.submitTimer = setInterval(() => {
+				if (this.watchDuration > 0) {
+					this.submitWatchDuration();
+					// 可选：提交后重置当前累计时长
+					// this.watchDuration = 0; 
+				}
+			}, 5000); // 5000毫秒=5秒
+		},
+
+		// 停止计时（自动提交最终时长）
+		stopWatchTimer() {
+			if (this.watchTimer) {
+				clearInterval(this.watchTimer);
+				this.watchTimer = null;
+			}
+			if (this.submitTimer) {
+				clearInterval(this.submitTimer);
+				this.submitTimer = null;
+			}
+			this.submitWatchDuration(); // 确保最终提交
+		},
+		submitWatchDuration() {
+			const gData = getApp().globalData;
+			// 若时长为0，跳过提交
+			if (this.watchDuration === 0) {
+				console.warn('观看时长:', this.watchDuration);
+				return;
+			}
+			uni.request({
+				url: gData.site_url + 'Live.SubmitWatchDuration', // ✅ 你需要确认这个接口名
+				method: 'POST',
+				data: {
+					uid: gData.userinfo.id,
+					token: gData.userinfo.token,
+					liveuid: this.liveInfo.liveuid,
+					courseid: this.liveInfo.courseid,
+					lessonid: this.liveInfo.lessonid,
+					duration: this.watchDuration,
+					sharer_id: this.liveInfo.sharer_id,
+				},
+				success: res => {
+					console.log('✅ 观看时长提交成功:', this.watchDuration + '秒');
+				},
+				fail: err => {
+					console.warn('❌ 观看时长提交失败:', err);
+				}
+			});
+		},
+		changePic() { //轮播方法
+			clearInterval(this.setInter1);
+			var animation = uni.createAnimation({
+				timingFunction: 'ease',
+				duration: 4000,
+				delay: 0,
+			});
+			this.animation = animation;
+			this.setInter1 = setInterval(() => {
+				this.num++;
+				if (this.num == this.picmaxnum) {
+					this.num = 0;
+				}
+				animation.opacity(1).step({
+					duration: 3000,
+					delay: 1000
 				});
-			},
-			videoStyle() {
-				const systemInfo = uni.getSystemInfoSync();
-				const isLandscape = systemInfo.windowWidth > systemInfo.windowHeight;
-
-				return {
-					width: isLandscape ? '177.78vh' : '100vw',
-					height: isLandscape ? '100vh' : '56.25vw',
-					objectFit: 'contain'
-				}
-			},
-			calculatedHeight() {
-				// 根据设备宽高比动态计算（示例：16:9比例）
-				const screenWidth = uni.getSystemInfoSync().screenWidth
-				return (screenWidth * 9) / 16
-			},
-			saveCurrentUrl() {
-				let pages = getCurrentPages();
-				let currentPage = pages[pages.length - 1];
-				let route = currentPage.route;
-				let options = currentPage.options;
-
-				let queryStr = Object.keys(options).map(k => `${k}=${options[k]}`).join('&');
-				let fullPath = '/' + route + (queryStr ? '?' + queryStr : '');
-
-				console.log('当前访问地址:', fullPath);
-				app.globalData.login_jump.page = fullPath;
-			},
-			stopPic() {
-				clearInterval(this.setInter1);
-			},
-			onVideoEnded() {
-				this.showEndScreen = true; // 延迟避免事件阻塞
-				this.stopWatchTimer();
-				console.log('视频播放完毕');
-				//	uni.hideLoading() // 隐藏可能的加载提示
-			},
-			// 开始计时（含5秒自动提交）
-			tartWatchTimer() {
-				if (this.watchTimer) clearInterval(this.watchTimer);
-				if (this.submitTimer) clearInterval(this.submitTimer); // 清除旧定时器
-
-				//this.watchDuration = 0;
-
-				// 1. 每秒计时
-				this.watchTimer = setInterval(() => {
-					this.watchDuration += 1;
-				}, 1000);
-
-				// 2. 每5秒自动提交
-				this.submitTimer = setInterval(() => {
-					if (this.watchDuration > 0) {
-						this.submitWatchDuration();
-						// 可选：提交后重置当前累计时长
-						// this.watchDuration = 0; 
-					}
-				}, 5000); // 5000毫秒=5秒
-			},
-
-			// 停止计时（自动提交最终时长）
-			stopWatchTimer() {
-				if (this.watchTimer) {
-					clearInterval(this.watchTimer);
-					this.watchTimer = null;
-				}
-				if (this.submitTimer) {
-					clearInterval(this.submitTimer);
-					this.submitTimer = null;
-				}
-				this.submitWatchDuration(); // 确保最终提交
-			},
-			submitWatchDuration() {
-				const gData = getApp().globalData;
-				// 若时长为0，跳过提交
-				if (this.watchDuration === 0) {
-					console.warn('观看时长:', this.watchDuration);
-					return;
-				}
-				uni.request({
-					url: gData.site_url + 'Live.SubmitWatchDuration', // ✅ 你需要确认这个接口名
-					method: 'POST',
-					data: {
-						uid: gData.userinfo.id,
-						token: gData.userinfo.token,
-						liveuid: this.liveInfo.liveuid,
-						courseid: this.liveInfo.courseid,
-						lessonid: this.liveInfo.lessonid,
-						duration: this.watchDuration,
-						sharer_id: this.liveInfo.sharer_id,
-					},
-					success: res => {
-						console.log('✅ 观看时长提交成功:', this.watchDuration + '秒');
-					},
-					fail: err => {
-						console.warn('❌ 观看时长提交失败:', err);
-					}
+				this.showpic = animation.export();
+				animation.opacity(0).step({
+					duration: 3000,
+					delay: 1000
 				});
-			},
-			changePic() { //轮播方法
-				clearInterval(this.setInter1);
-				var animation = uni.createAnimation({
-					timingFunction: 'ease',
-					duration: 4000,
-					delay: 0,
-				});
-				this.animation = animation;
-				this.setInter1 = setInterval(() => {
-					this.num++;
-					if (this.num == this.picmaxnum) {
-						this.num = 0;
+				this.hidepic = animation.export();
+			}, 4000);
+		},
+		//准备开始录音
+		startVoice(e) {
+			this.chat_audio.pause();
+			clearInterval(this.intervl);
+			for (let i = 0; i < this.voice_list.length; i++) {
+				this.voice_list[i] = '../../static/receiver_voice@3x.png';
+				this.$set(this.voice_list, i, this.voice_list[i]);
+			}
+			uni.request({
+				url: getApp().globalData.site_url + 'Upload.GetQiniuToken',
+				method: 'POST',
+				data: {
+					'uid': getApp().globalData.userinfo.id,
+					'token': getApp().globalData.userinfo.token
+				},
+				success: res => {
+					uni.hideLoading();
+					if (res.data.data.code == 0) {
+						this.QiNiutoken = this.decypt(res.data.data.info[0].token);
+						this.recording = true;
+						this.isStopVoice = false;
+						this.canSend = true;
+						this.voiceIconText = "正在录音..."
+						this.voiceimagestatus = true;
+						this.PointY = e.touches[0].clientY;
+						this.Recorder.start({
+							format: 'mp3'
+						});
+					} else {
+						uni.showToast({
+							title: '请重试',
+							icon: 'none'
+						});
 					}
-					animation.opacity(1).step({
-						duration: 3000,
-						delay: 1000
-					});
-					this.showpic = animation.export();
-					animation.opacity(0).step({
-						duration: 3000,
-						delay: 1000
-					});
-					this.hidepic = animation.export();
-				}, 4000);
-			},
-			//准备开始录音
-			startVoice(e) {
-				this.chat_audio.pause();
-				clearInterval(this.intervl);
-				for (let i = 0; i < this.voice_list.length; i++) {
-					this.voice_list[i] = '../../static/receiver_voice@3x.png';
-					this.$set(this.voice_list, i, this.voice_list[i]);
 				}
-				uni.request({
-					url: getApp().globalData.site_url + 'Upload.GetQiniuToken',
-					method: 'POST',
-					data: {
-						'uid': getApp().globalData.userinfo.id,
-						'token': getApp().globalData.userinfo.token
-					},
-					success: res => {
-						uni.hideLoading();
-						if (res.data.data.code == 0) {
-							this.QiNiutoken = this.decypt(res.data.data.info[0].token);
-							this.recording = true;
-							this.isStopVoice = false;
-							this.canSend = true;
-							this.voiceIconText = "正在录音..."
-							this.voiceimagestatus = true;
-							this.PointY = e.touches[0].clientY;
-							this.Recorder.start({
-								format: 'mp3'
-							});
-						} else {
-							uni.showToast({
-								title: '请重试',
-								icon: 'none'
-							});
-						}
-					}
-				});
-			},
-			//录音已经开始
-			beginVoice() {
-				if (this.isStopVoice) {
-					this.Recorder.stop();
-					return;
-				}
-				this.voiceTitle = '松开 结束'
-				this.voiceInterval = setInterval(() => {
-					this.voiceTime++;
-				}, 1000)
-			},
-			//move 正在录音中
-			moveVoice(e) {
-				const PointY = e.touches[0].clientY
-				const slideY = this.PointY - PointY;
-				if (slideY > uni.upx2px(120)) {
-					this.canSend = false;
-					this.voiceIconText = '松开手指 取消发送 '
-					this.voiceTitle = '手指上滑 取消发送 '
-					this.voiceimagestatus = false;
-					this.stopPic();
-				} else if (slideY > uni.upx2px(60)) {
-					this.canSend = false;
-					this.voiceTitle = '手指上滑 取消发送 '
-					this.voiceIconText = '手指上滑 取消发送 '
-					this.voiceimagestatus = false;
-					this.stopPic();
-				} else {
-					this.canSend = true;
-					this.voiceIconText = '正在录音...'
-					this.voiceTitle = '松开结束'
-					this.voiceimagestatus = true;
-					this.changePic();
-				}
-			},
-			//结束录音
-			endVoice() {
-				this.stopPic();
-				this.inputbuttom = 0;
-				this.isStopVoice = true; //加锁 确保已经结束录音并不会录制
+			});
+		},
+		//录音已经开始
+		beginVoice() {
+			if (this.isStopVoice) {
 				this.Recorder.stop();
-				this.voiceTitle = '按住 说话'
-				this.recording = false;
-			},
-			//录音被打断
-			cancelVoice(e) {
+				return;
+			}
+			this.voiceTitle = '松开 结束'
+			this.voiceInterval = setInterval(() => {
+				this.voiceTime++;
+			}, 1000)
+		},
+		//move 正在录音中
+		moveVoice(e) {
+			const PointY = e.touches[0].clientY
+			const slideY = this.PointY - PointY;
+			if (slideY > uni.upx2px(120)) {
+				this.canSend = false;
+				this.voiceIconText = '松开手指 取消发送 '
+				this.voiceTitle = '手指上滑 取消发送 '
+				this.voiceimagestatus = false;
 				this.stopPic();
+			} else if (slideY > uni.upx2px(60)) {
+				this.canSend = false;
+				this.voiceTitle = '手指上滑 取消发送 '
+				this.voiceIconText = '手指上滑 取消发送 '
+				this.voiceimagestatus = false;
+				this.stopPic();
+			} else {
+				this.canSend = true;
+				this.voiceIconText = '正在录音...'
+				this.voiceTitle = '松开结束'
+				this.voiceimagestatus = true;
+				this.changePic();
+			}
+		},
+		//结束录音
+		endVoice() {
+			this.stopPic();
+			this.inputbuttom = 0;
+			this.isStopVoice = true; //加锁 确保已经结束录音并不会录制
+			this.Recorder.stop();
+			this.voiceTitle = '按住 说话'
+			this.recording = false;
+		},
+		//录音被打断
+		cancelVoice(e) {
+			this.stopPic();
+			this.inputbuttom = 0;
+			this.recording = false;
+			this.voiceTime = 0;
+			this.voiceTitle = '按住 说话';
+			this.canSend = false;
+			this.Recorder.stop();
+		},
+		//处理录音文件
+		handleRecorder({
+			tempFilePath,
+			duration
+		}) {
+			if (this.canSend == false) {
+				return;
+			}
+			let contentDuration;
+			// #ifdef MP-WEIXIN
+			this.voiceTime = 0;
+			console.log(duration);
+			if (duration < 1500) {
+				this.voiceIconText = "说话时间过短";
+				this.recording = false;
 				this.inputbuttom = 0;
 				this.recording = false;
 				this.voiceTime = 0;
 				this.voiceTitle = '按住 说话';
 				this.canSend = false;
 				this.Recorder.stop();
-			},
-			//处理录音文件
-			handleRecorder({
-				tempFilePath,
-				duration
-			}) {
-				if (this.canSend == false) {
-					return;
-				}
-				let contentDuration;
-				// #ifdef MP-WEIXIN
-				this.voiceTime = 0;
-				console.log(duration);
-				if (duration < 1500) {
-					this.voiceIconText = "说话时间过短";
+				return;
+			}
+			contentDuration = duration / 1000;
+			// #endif
+			// #ifdef APP-PLUS
+			contentDuration = this.voiceTime + 1;
+			this.voiceTime = 0;
+			if (contentDuration <= 0) {
+				this.voiceIconText = "说话时间过短";
+				setTimeout(() => {
 					this.recording = false;
-					this.inputbuttom = 0;
-					this.recording = false;
-					this.voiceTime = 0;
-					this.voiceTitle = '按住 说话';
-					this.canSend = false;
-					this.Recorder.stop();
-					return;
-				}
-				contentDuration = duration / 1000;
-				// #endif
-				// #ifdef APP-PLUS
-				contentDuration = this.voiceTime + 1;
-				this.voiceTime = 0;
-				if (contentDuration <= 0) {
-					this.voiceIconText = "说话时间过短";
-					setTimeout(() => {
-						this.recording = false;
-					}, 200)
-					return;
-				};
-				// #endif
-				this.recording = false;
-				var name = 'voice_knowledge' + this.getTime() + '.wav';
-				qiniuUploader.upload(tempFilePath, res => {
-					// if (res.fileUrl.indexOf("undefined") != -1) {
-					// console.log('上传成功，但url含 undefined');
-					// uni.showToast({
-					// 	title: '出现错误，请重新录制语音',
-					// 	icon: 'none'
-					// });
-					// return;
-					// }
-					// console.log('上传成功');
-					// console.log(res);
-					this.voice_url = res.fileUrl;
-					this.voice_length = Math.ceil(contentDuration);
-					this.send();
-				}, error => {
-					console.log('上传失败');
-				}, {
-					region: 'ECN',
-					domain: app.globalData.qiniuimageurl,
-					key: name,
-					uptoken: this.QiNiutoken,
-				});
-			},
-			big_change(event) {
-				this.show_big_ppt_index = parseInt(event.detail.current) + 1;
-				this.show_big_ppt_index2 = parseInt(event.detail.current);
-			},
-			big_ppt_back() {
-				this.show_big_ppt = false;
-			},
-			getTime() {
-				let yy = new Date().getFullYear();
-				let mm = new Date().getMonth() + 1;
-				let dd = new Date().getDate();
-				let hh = new Date().getHours();
-				let mf = new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date().getMinutes();
-				let ss = new Date().getSeconds() < 10 ? '0' + new Date().getSeconds() : new Date().getSeconds();
-				return yy + mm + dd + hh + mf + ss;
-			},
-			backCourseList() {
-				uni.showModal({
-					title: '是否要退出直播间',
-					content: '',
-					showCancel: true,
-					cancelText: '取消',
-					confirmText: '确定',
-					confirmColor: '#2C62EF',
-					success: res => {
-						if (res.confirm) {
-							// uni.showLoading({
-							// 	title:null
-							// })
-							socket.disconnect();
-							socket.close();
-							setTimeout(() => {
-								uni.hideLoading();
-								uni.navigateBack({
-									delta: 1
-								});
-							}, 0);
-						}
-					},
-					fail: () => {},
-					complete: () => {}
-				});
-			},
-			open_voice(url, index) {
+				}, 200)
+				return;
+			};
+			// #endif
+			this.recording = false;
+			var name = 'voice_knowledge' + this.getTime() + '.wav';
+			qiniuUploader.upload(tempFilePath, res => {
+				// if (res.fileUrl.indexOf("undefined") != -1) {
+				// console.log('上传成功，但url含 undefined');
+				// uni.showToast({
+				// 	title: '出现错误，请重新录制语音',
+				// 	icon: 'none'
+				// });
+				// return;
+				// }
+				// console.log('上传成功');
+				// console.log(res);
+				this.voice_url = res.fileUrl;
+				this.voice_length = Math.ceil(contentDuration);
+				this.send();
+			}, error => {
+				console.log('上传失败');
+			}, {
+				region: 'ECN',
+				domain: app.globalData.qiniuimageurl,
+				key: name,
+				uptoken: this.QiNiutoken,
+			});
+		},
+		big_change(event) {
+			this.show_big_ppt_index = parseInt(event.detail.current) + 1;
+			this.show_big_ppt_index2 = parseInt(event.detail.current);
+		},
+		big_ppt_back() {
+			this.show_big_ppt = false;
+		},
+		getTime() {
+			let yy = new Date().getFullYear();
+			let mm = new Date().getMonth() + 1;
+			let dd = new Date().getDate();
+			let hh = new Date().getHours();
+			let mf = new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date().getMinutes();
+			let ss = new Date().getSeconds() < 10 ? '0' + new Date().getSeconds() : new Date().getSeconds();
+			return yy + mm + dd + hh + mf + ss;
+		},
+		backCourseList() {
+			uni.showModal({
+				title: '是否要退出视频',
+				content: '',
+				showCancel: true,
+				cancelText: '取消',
+				confirmText: '确定',
+				confirmColor: '#2C62EF',
+				success: res => {
+					if (res.confirm) {
+						// uni.showLoading({
+						// 	title:null
+						// })
+						socket.disconnect();
+						socket.close();
+						setTimeout(() => {
+							uni.hideLoading();
+							uni.navigateBack({
+								delta: 1
+							});
+						}, 0);
+					}
+				},
+				fail: () => { },
+				complete: () => { }
+			});
+		},
+		open_voice(url, index) {
+			this.chat_audio.pause();
+			clearInterval(this.intervl);
+			for (let i = 0; i < this.voice_list.length; i++) {
+				this.voice_list[i] = '../../static/receiver_voice@3x.png';
+				this.$set(this.voice_list, i, this.voice_list[i]);
+			}
+			if (this.voice_index == index) {
+				this.voice_index = -1;
+				console.log('手动停止');
 				this.chat_audio.pause();
 				clearInterval(this.intervl);
-				for (let i = 0; i < this.voice_list.length; i++) {
-					this.voice_list[i] = '../../static/receiver_voice@3x.png';
-					this.$set(this.voice_list, i, this.voice_list[i]);
-				}
-				if (this.voice_index == index) {
+			} else {
+				console.log(url);
+				if (url.indexOf("undefined") != -1) {
 					this.voice_index = -1;
-					console.log('手动停止');
+					console.log('url出现错误，停止播放');
 					this.chat_audio.pause();
 					clearInterval(this.intervl);
-				} else {
-					console.log(url);
-					if (url.indexOf("undefined") != -1) {
-						this.voice_index = -1;
-						console.log('url出现错误，停止播放');
-						this.chat_audio.pause();
-						clearInterval(this.intervl);
-						return;
-					}
-					this.chat_audio.src = url;
-					this.chat_audio.play();
-					this.voice_index = index;
-					this.intervl = setInterval(() => {
-						console.log('启动');
-						this.voice_list[index] = '../../static/receiver_voice_play_1@3x.png';
+					return;
+				}
+				this.chat_audio.src = url;
+				this.chat_audio.play();
+				this.voice_index = index;
+				this.intervl = setInterval(() => {
+					console.log('启动');
+					this.voice_list[index] = '../../static/receiver_voice_play_1@3x.png';
+					this.$set(this.voice_list, index, this.voice_list[index]);
+					setTimeout(() => {
+						this.voice_list[index] = '../../static/receiver_voice_play_2@3x.png';
 						this.$set(this.voice_list, index, this.voice_list[index]);
-						setTimeout(() => {
-							this.voice_list[index] = '../../static/receiver_voice_play_2@3x.png';
-							this.$set(this.voice_list, index, this.voice_list[index]);
-						}, 200);
-						setTimeout(() => {
-							this.voice_list[index] = '../../static/receiver_voice_play_3@3x.png';
-							this.$set(this.voice_list, index, this.voice_list[index]);
-						}, 400);
-					}, 600);
-				}
-				if (this.isaudioerror == true) {
-					uni.showToast({
-						title: '1'
+					}, 200);
+					setTimeout(() => {
+						this.voice_list[index] = '../../static/receiver_voice_play_3@3x.png';
+						this.$set(this.voice_list, index, this.voice_list[index]);
+					}, 400);
+				}, 600);
+			}
+			if (this.isaudioerror == true) {
+				uni.showToast({
+					title: '1'
+				});
+				this.chat_audio.stop();
+				clearInterval(this.intervl);
+			}
+		},
+		addNodeListen() {
+			socket = new unisocket((app.globalData.socket_url), {
+				query: {},
+				transports: ['websocket', 'polling'],
+				timeout: 5000
+			});
+			socket.emit('conn', {
+				uid: this.userInfo.id, //进入该房间的学生id 假如等于下面的房间id, 那即为老师进入房间
+				roomnum: this.liveInfo.liveuid, //房间号,即老师id
+				nickname: this.userInfo.user_nickname,
+				stream: this.liveInfo.liveuid + '_' + this.liveInfo.courseid + '_' + this.liveInfo
+					.lessonid, //老师id_课程id_课时id
+				token: this.userInfo.token,
+			});
+			socket.on('error', (data) => {
+				console.log('ws 失败 ' + data);
+			});
+			socket.on('conn', (data) => {
+				console.log('ws 已连接 ' + data);
+				if (data == 'no') {
+					uni.showModal({
+						title: '聊天服务器连接失败',
+						content: '请尝试退出直播间重新进入',
+						showCancel: false,
+						cancelText: '',
+						confirmText: '确定',
+						confirmColor: '#38DAA6',
+						success: res => {
+							uni.navigateBack({
+								delta: 1
+							});
+						},
+						fail: () => { },
+						complete: () => { }
 					});
-					this.chat_audio.stop();
-					clearInterval(this.intervl);
+					return;
 				}
-			},
-			addNodeListen() {
-				socket = new unisocket((app.globalData.socket_url), {
-					query: {},
-					transports: ['websocket', 'polling'],
-					timeout: 5000
-				});
-				socket.emit('conn', {
-					uid: this.userInfo.id, //进入该房间的学生id 假如等于下面的房间id, 那即为老师进入房间
-					roomnum: this.liveInfo.liveuid, //房间号,即老师id
-					nickname: this.userInfo.user_nickname,
-					stream: this.liveInfo.liveuid + '_' + this.liveInfo.courseid + '_' + this.liveInfo
-						.lessonid, //老师id_课程id_课时id
-					token: this.userInfo.token,
-				});
-				socket.on('error', (data) => {
-					console.log('ws 失败 ' + data);
-				});
-				socket.on('conn', (data) => {
-					console.log('ws 已连接 ' + data);
-					if (data == 'no') {
-						uni.showModal({
-							title: '聊天服务器连接失败',
-							content: '请尝试退出直播间重新进入',
-							showCancel: false,
-							cancelText: '',
-							confirmText: '确定',
-							confirmColor: '#38DAA6',
-							success: res => {
-								uni.navigateBack({
-									delta: 1
-								});
-							},
-							fail: () => {},
-							complete: () => {}
-						});
-						return;
+				this.isConnectSocket = true; //已连接
+			});
+			let that = this;
+			socket.on('broadcastingListen', (data) => {
+				console.log(data);
+				for (let i = 0; i < data.length; i++) {
+					let msgInfo = JSON.parse(data[i]).msg[0];
+					//console.log(JSON.parse(JSON.stringify(msgInfo)));
+					if (msgInfo._method_ == "changeMode") {
+						if (msgInfo.action == 1) {
+							console.log('切换到PPt');
+							this.livetype = 4;
+							this.fromPPt = true;
+							this.fromshare = false;
+							this.showsmallvideo = true;
+							this.showShareScreen = false;
+							this.scrollH -= 150;
+							// #ifdef MP-WEIXIN
+							this.wechatliveurl_small = this.res_url;
+							this.wechatliveurl = '';
+							// #endif
+							// #ifdef H5
+							this.showBigScreen = false;
+							H5Client.leave();
+							this.agoraH5(this.agoraappid, this.agoramRoomName);
+							// #endif
+						} else if (msgInfo.action == 0) {
+							console.log('切换到直播');
+							if (this.fromshare == false && this.fromPPt == true) {
+								this.scrollH += 150;
+							}
+							this.livetype = 5;
+							this.fromPPt = false;
+							this.fromshare = false;
+							this.showsmallvideo = false;
+							this.showShareScreen = false;
+							// #ifdef MP-WEIXIN
+							this.wechatliveurl_small = '';
+							this.wechatliveurl = this.res_url;
+							// #endif
+							// #ifdef H5
+							this.showBigScreen = true;
+							H5Client.leave();
+							this.agoraH5(this.agoraappid, this.agoramRoomName);
+							// #endif
+						} else if (msgInfo.action == 2) {
+							console.log('切换到屏幕共享');
+							//屏幕共享
+							if (this.fromPPt == true) {
+								this.scrollH += 150;
+							}
+							this.livetype = 5;
+							this.fromshare = true;
+							this.showShareScreen = true;
+							this.showsmallvideo = false;
+							// #ifdef MP-WEIXIN
+							this.wechatliveurl_small = '';
+							this.wechatliveurl = this.res_url;
+							// #endif
+							// #ifdef H5
+							this.showBigScreen = false;
+							H5Client.leave();
+							this.agoraH5(this.agoraappid, this.agoramRoomName);
+							// #endif
+						}
 					}
-					this.isConnectSocket = true; //已连接
-				});
-				let that = this;
-				socket.on('broadcastingListen', (data) => {
-					console.log(data);
-					for (let i = 0; i < data.length; i++) {
-						let msgInfo = JSON.parse(data[i]).msg[0];
-						//console.log(JSON.parse(JSON.stringify(msgInfo)));
-						if (msgInfo._method_ == "changeMode") {
-							if (msgInfo.action == 1) {
-								console.log('切换到PPt');
-								this.livetype = 4;
-								this.fromPPt = true;
-								this.fromshare = false;
-								this.showsmallvideo = true;
-								this.showShareScreen = false;
-								this.scrollH -= 150;
-								// #ifdef MP-WEIXIN
-								this.wechatliveurl_small = this.res_url;
-								this.wechatliveurl = '';
-								// #endif
-								// #ifdef H5
-								this.showBigScreen = false;
-								H5Client.leave();
-								this.agoraH5(this.agoraappid, this.agoramRoomName);
-								// #endif
-							} else if (msgInfo.action == 0) {
-								console.log('切换到直播');
-								if (this.fromshare == false && this.fromPPt == true) {
-									this.scrollH += 150;
-								}
-								this.livetype = 5;
-								this.fromPPt = false;
-								this.fromshare = false;
-								this.showsmallvideo = false;
-								this.showShareScreen = false;
-								// #ifdef MP-WEIXIN
-								this.wechatliveurl_small = '';
-								this.wechatliveurl = this.res_url;
-								// #endif
-								// #ifdef H5
-								this.showBigScreen = true;
-								H5Client.leave();
-								this.agoraH5(this.agoraappid, this.agoramRoomName);
-								// #endif
-							} else if (msgInfo.action == 2) {
-								console.log('切换到屏幕共享');
-								//屏幕共享
-								if (this.fromPPt == true) {
-									this.scrollH += 150;
-								}
-								this.livetype = 5;
-								this.fromshare = true;
-								this.showShareScreen = true;
-								this.showsmallvideo = false;
-								// #ifdef MP-WEIXIN
-								this.wechatliveurl_small = '';
-								this.wechatliveurl = this.res_url;
-								// #endif
-								// #ifdef H5
-								this.showBigScreen = false;
-								H5Client.leave();
-								this.agoraH5(this.agoraappid, this.agoramRoomName);
-								// #endif
-							}
-						}
-						if (msgInfo._method_ == "Kick") {
-							//踢出直播间
-							if (msgInfo.action == 1) {
-								if (msgInfo.touid == getApp().globalData.userinfo.id) {
-									uni.showToast({
-										title: '你已被讲师踢出房间',
-										icon: 'none'
-									});
-									setTimeout(() => {
-										uni.navigateBack({
-											delta: 1
-										});
-									}, 500);
-								}
-							}
-						}
-						if (msgInfo._method_ == "StartEndLive") {
-							this.zhibo_leave = true;
-							this.video_zhezhao = true;
-							this.show_nothing_image = false;
-							this.show_nothing_image2 = true;
-							this.zhibo_leave_text = "直播已结束";
-							this.zhibo_leave_text_w = "";
-						}
-						if (msgInfo._method_ == "roomShutup") {
-							//App.Course.SetLesson
-							//1 禁言 0 解除
-							if (msgInfo.action == 1) {
-								this.shut_place = "全体禁言中";
-								this.content = ""
-								this.isshut = true;
-							} else {
-								this.shut_place = "我来说几句～";
-								this.content = '';
-								this.isshut = false;
-							}
-						}
-						if (msgInfo._method_ == "Shutup") {
+					if (msgInfo._method_ == "Kick") {
+						//踢出直播间
+						if (msgInfo.action == 1) {
 							if (msgInfo.touid == getApp().globalData.userinfo.id) {
-								this.shut_place = "你已被禁言";
-								this.isshut = true;
 								uni.showToast({
-									title: '你已被禁言',
+									title: '你已被讲师踢出房间',
 									icon: 'none'
 								});
-							}
-						}
-						if (msgInfo._method_ == "SendMsg") {
-							if (msgInfo.action == 0) {
-								// if (msgInfo.ct.uid != getApp().globalData.userinfo.id) {
-								this.Usercount += 1;
-								console.log('用户进入');
-								// }
-							} else {
-								var pinyinArray = getApp().globalData.pinyinArray;
-								var emojiArray = getApp().globalData.emojiArray;
-								var biaoqing_url = getApp().globalData.biaoqingurl;
-								var content = msgInfo.content;
-								if (msgInfo.type == 0) {
-									for (let j = 0; j < 50; j++) {
-										for (let i = 0; i < emojiArray.length; i++) {
-											var path = getApp().globalData.biaoqingurl + pinyinArray[i];
-											content = content.replace(emojiArray[i],
-												'<img style="width: 25px; height: 25px; vertical-align: middle;" src ="' +
-												path + '"/>'
-											);
-										}
-									}
-								}
-								this.voice_list.push('../../static/receiver_voice@3x.png');
-								msgInfo.content = content;
-								this.list.push(msgInfo);
-								this.pageToBottom();
-							}
-						}
-						if (msgInfo._method_ == 'disconnect') {
-							if (this.Usercount != 0) {
-								this.Usercount -= 1;
-							}
-							console.log('用户离开');
-						}
-						if (msgInfo._method_ == 'setPPT') {
-							if (msgInfo.action == 0) {
-								var item = {
-									'id': msgInfo.pptid,
-									'thumb': msgInfo.thumb
-								};
-								this.noppt = false;
-								this.ppts.push(item);
-								console.log('添加ppt');
-							} else if (msgInfo.action == 1) {
-								console.log('ppt删除');
-								var pptlist = this.ppts;
-								for (let i = 0; i < pptlist.length; i++) {
-									var item = pptlist[i];
-									if (item.id == msgInfo.pptid) {
-										this.ppts.splice(i, 1);
-									}
-								}
-								if (this.ppts.length == 0) {
-									this.noppt = true;
-								}
-							} else if (msgInfo.action == 2) {
-								this.pptindex = parseInt(msgInfo.index);
-								this.showppt_index = this.pptindex + 1;
-								console.log('ppt切换索引');
+								setTimeout(() => {
+									uni.navigateBack({
+										delta: 1
+									});
+								}, 500);
 							}
 						}
 					}
-				});
-			},
-			showBigView(index) {
-				this.show_big_ppt = true;
-				this.show_big_ppt_index = index + 1;
-				this.show_big_ppt_index2 = index;
-			},
-			songemojy(data) {
-				this.content += data.chinese;
-			},
-			GetChat() {
-				let gData = app.globalData;
-				uni.request({
-					url: gData.site_url + 'Live.GetChat',
-					method: 'POST',
-					data: {
-						'uid': gData.userinfo.id,
-						'token': gData.userinfo.token,
-						'liveuid': this.liveInfo.liveuid,
-						'courseid': this.liveInfo.courseid,
-						'lessonid': this.liveInfo.lessonid,
-						'sharer_id': this.liveInfo.sharer_id,
-						'lastid': '',
-						'type': '0'
-					},
-					success: res => {
-						var pinyinArray = getApp().globalData.pinyinArray;
-						var emojiArray = getApp().globalData.emojiArray;
-						this.list = res.data.data.info;
-						this.tartWatchTimer();
-						for (let j = 0; j < this.list.length; j++) {
-							var msg = this.list[j];
-							var content = msg.content;
-							if (msg.type == 0) {
+					if (msgInfo._method_ == "StartEndLive") {
+						this.zhibo_leave = true;
+						this.video_zhezhao = true;
+						this.show_nothing_image = false;
+						this.show_nothing_image2 = true;
+						this.zhibo_leave_text = "直播已结束";
+						this.zhibo_leave_text_w = "";
+					}
+					if (msgInfo._method_ == "roomShutup") {
+						//App.Course.SetLesson
+						//1 禁言 0 解除
+						if (msgInfo.action == 1) {
+							this.shut_place = "全体禁言中";
+							this.content = ""
+							this.isshut = true;
+						} else {
+							this.shut_place = "我来说几句～";
+							this.content = '';
+							this.isshut = false;
+						}
+					}
+					if (msgInfo._method_ == "Shutup") {
+						if (msgInfo.touid == getApp().globalData.userinfo.id) {
+							this.shut_place = "你已被禁言";
+							this.isshut = true;
+							uni.showToast({
+								title: '你已被禁言',
+								icon: 'none'
+							});
+						}
+					}
+					if (msgInfo._method_ == "SendMsg") {
+						if (msgInfo.action == 0) {
+							// if (msgInfo.ct.uid != getApp().globalData.userinfo.id) {
+							this.Usercount += 1;
+							console.log('用户进入');
+							// }
+						} else {
+							var pinyinArray = getApp().globalData.pinyinArray;
+							var emojiArray = getApp().globalData.emojiArray;
+							var biaoqing_url = getApp().globalData.biaoqingurl;
+							var content = msgInfo.content;
+							if (msgInfo.type == 0) {
 								for (let j = 0; j < 50; j++) {
 									for (let i = 0; i < emojiArray.length; i++) {
 										var path = getApp().globalData.biaoqingurl + pinyinArray[i];
@@ -1224,492 +1116,673 @@
 								}
 							}
 							this.voice_list.push('../../static/receiver_voice@3x.png');
-							msg.content = content;
-							this.list[j] = msg;
+							msgInfo.content = content;
+							this.list.push(msgInfo);
+							this.pageToBottom();
 						}
-					},
-				});
-			},
-			async changeXXK(index) {
-				this.tabIndex = index;
-				setTimeout(() => {
-					this.pageToBottom();
-				}, 300);
-				return this.tabIndex;
-			},
-			onChangeTab(e) {
-				this.tabIndex = e.detail.current;
-				this.pageToBottom();
-			},
-			decypt(code) {
-				var newcode = '';
-				var str = '1ecxXyLRB.COdrAi:q09Z62ash-QGn8VFNIlb=fM/D74WjS_EUzYuw?HmTPvkJ3otK5gp&';
-				for (var i = 0; i < code.length; i++) {
-					var codeIteam = code[i];
-					for (var j = 0; j < str.length; j++) {
-						var stringIteam = str[j];
-						if (codeIteam == stringIteam) {
-							if (j == 0) {
-								newcode += str[str.length - 1];
-							} else {
-								newcode += str[j - 1];
+					}
+					if (msgInfo._method_ == 'disconnect') {
+						if (this.Usercount != 0) {
+							this.Usercount -= 1;
+						}
+						console.log('用户离开');
+					}
+					if (msgInfo._method_ == 'setPPT') {
+						if (msgInfo.action == 0) {
+							var item = {
+								'id': msgInfo.pptid,
+								'thumb': msgInfo.thumb
+							};
+							this.noppt = false;
+							this.ppts.push(item);
+							console.log('添加ppt');
+						} else if (msgInfo.action == 1) {
+							console.log('ppt删除');
+							var pptlist = this.ppts;
+							for (let i = 0; i < pptlist.length; i++) {
+								var item = pptlist[i];
+								if (item.id == msgInfo.pptid) {
+									this.ppts.splice(i, 1);
+								}
 							}
+							if (this.ppts.length == 0) {
+								this.noppt = true;
+							}
+						} else if (msgInfo.action == 2) {
+							this.pptindex = parseInt(msgInfo.index);
+							this.showppt_index = this.pptindex + 1;
+							console.log('ppt切换索引');
 						}
 					}
 				}
-				return newcode;
-			},
-			agoraWechat(agoraappid, agorastream, uid) {
-				this.video_zhezhao = true;
-				var _that = this;
-				//初始化
-				wechatAgora = new AogoraWechat.Client();
-				wechatAgora.setRole('audience');
-				wechatAgora.init(this.decypt(agoraappid), () => {
-						console.log('小程序初始化成功');
-						//加入通道
-						wechatAgora.join('', agorastream, uid, () => {
-							console.log('加入通道成功');
-							this.zhibo_leave = true;
-						}, e => {
-							console.log('加入通道失败');
-							this.zhibo_leave = true;
-						});
-					},
-					e => {
-						this.zhibo_leave = true;
-						console.log('小程序初始化失败');
-					});
-				//订阅远端流
-				wechatAgora.on("stream-added", e => {
-					wechatAgora.subscribe(e.uid, (res) => {
-						this.zhibo_leave = false;
-						this.video_zhezhao = true;
-						console.log("订阅视频流成功：" + res);
-						this.res_url = res;
-						if (this.showsmallvideo == true) {
-							this.wechatliveurl_small = res;
-						} else {
-							this.wechatliveurl = res;
+			});
+		},
+		showBigView(index) {
+			this.show_big_ppt = true;
+			this.show_big_ppt_index = index + 1;
+			this.show_big_ppt_index2 = index;
+		},
+		songemojy(data) {
+			this.content += data.chinese;
+		},
+		GetChat() {
+			let gData = app.globalData;
+			uni.request({
+				url: gData.site_url + 'Live.GetChat',
+				method: 'POST',
+				data: {
+					'uid': gData.userinfo.id,
+					'token': gData.userinfo.token,
+					'liveuid': this.liveInfo.liveuid,
+					'courseid': this.liveInfo.courseid,
+					'lessonid': this.liveInfo.lessonid,
+					'sharer_id': this.liveInfo.sharer_id,
+					'lastid': '',
+					'type': '0'
+				},
+				success: res => {
+					var pinyinArray = getApp().globalData.pinyinArray;
+					var emojiArray = getApp().globalData.emojiArray;
+					this.list = res.data.data.info;
+					this.tartWatchTimer();
+					for (let j = 0; j < this.list.length; j++) {
+						var msg = this.list[j];
+						var content = msg.content;
+						if (msg.type == 0) {
+							for (let j = 0; j < 50; j++) {
+								for (let i = 0; i < emojiArray.length; i++) {
+									var path = getApp().globalData.biaoqingurl + pinyinArray[i];
+									content = content.replace(emojiArray[i],
+										'<img style="width: 25px; height: 25px; vertical-align: middle;" src ="' +
+										path + '"/>'
+									);
+								}
+							}
 						}
-					}, (err) => {
-						console.log("订阅视频流错误", err);
-						this.video_zhezhao = false;
-						this.zhibo_leave = true;
-					});
+						this.voice_list.push('../../static/receiver_voice@3x.png');
+						msg.content = content;
+						this.list[j] = msg;
+					}
+				},
+			});
+		},
+		async changeXXK(index) {
+			this.tabIndex = index;
+			setTimeout(() => {
+				this.pageToBottom();
+			}, 300);
+			return this.tabIndex;
+		},
+		onChangeTab(e) {
+			this.tabIndex = e.detail.current;
+			this.pageToBottom();
+		},
+		decypt(code) {
+			var newcode = '';
+			var str = '1ecxXyLRB.COdrAi:q09Z62ash-QGn8VFNIlb=fM/D74WjS_EUzYuw?HmTPvkJ3otK5gp&';
+			for (var i = 0; i < code.length; i++) {
+				var codeIteam = code[i];
+				for (var j = 0; j < str.length; j++) {
+					var stringIteam = str[j];
+					if (codeIteam == stringIteam) {
+						if (j == 0) {
+							newcode += str[str.length - 1];
+						} else {
+							newcode += str[j - 1];
+						}
+					}
+				}
+			}
+			return newcode;
+		},
+		agoraWechat(agoraappid, agorastream, uid) {
+			this.video_zhezhao = true;
+			var _that = this;
+			//初始化
+			wechatAgora = new AogoraWechat.Client();
+			wechatAgora.setRole('audience');
+			wechatAgora.init(this.decypt(agoraappid), () => {
+				console.log('小程序初始化成功');
+				//加入通道
+				wechatAgora.join('', agorastream, uid, () => {
+					console.log('加入通道成功');
+					this.zhibo_leave = true;
+				}, e => {
+					console.log('加入通道失败');
+					this.zhibo_leave = true;
 				});
-				wechatAgora.on("stream-removed", e => {
+			},
+				e => {
+					this.zhibo_leave = true;
+					console.log('小程序初始化失败');
+				});
+			//订阅远端流
+			wechatAgora.on("stream-added", e => {
+				wechatAgora.subscribe(e.uid, (res) => {
+					this.zhibo_leave = false;
+					this.video_zhezhao = true;
+					console.log("订阅视频流成功：" + res);
+					this.res_url = res;
+					if (this.showsmallvideo == true) {
+						this.wechatliveurl_small = res;
+					} else {
+						this.wechatliveurl = res;
+					}
+				}, (err) => {
+					console.log("订阅视频流错误", err);
 					this.video_zhezhao = false;
 					this.zhibo_leave = true;
 				});
-				//重连机制
-				wechatAgora.rejoin('', agorastream, uid, '', () => {
-					console.log('重连加入通道成功');
-				}, e => {
-					console.log('重连加入通道失败');
-				});
-			},
-			agoraH5(agoraappid, agorastream) {
-				// #ifdef H5
-				var _this = this;
+			});
+			wechatAgora.on("stream-removed", e => {
+				this.video_zhezhao = false;
+				this.zhibo_leave = true;
+			});
+			//重连机制
+			wechatAgora.rejoin('', agorastream, uid, '', () => {
+				console.log('重连加入通道成功');
+			}, e => {
+				console.log('重连加入通道失败');
+			});
+		},
+		agoraH5(agoraappid, agorastream) {
+			// #ifdef H5
+			var _this = this;
 
-				H5Client = AgoraRTCH5.createClient({
-					mode: "live",
-					codec: "vp8",
-				});
-				AgoraRTCH5.client = H5Client;
-				H5Client.init(_this.decypt(agoraappid));
-				H5Client.setClientRole('audience');
-				H5Client.join("", agorastream, null, (uid) => {
-					console.log('加入通道成功');
-					_this.zhibo_leave = true;
-				}, null);
+			H5Client = AgoraRTCH5.createClient({
+				mode: "live",
+				codec: "vp8",
+			});
+			AgoraRTCH5.client = H5Client;
+			H5Client.init(_this.decypt(agoraappid));
+			H5Client.setClientRole('audience');
+			H5Client.join("", agorastream, null, (uid) => {
+				console.log('加入通道成功');
+				_this.zhibo_leave = true;
+			}, null);
 
-				H5Client.on("stream-added", function(evt) {
-					H5Client.subscribe(evt.stream, null);
-					_this.zhibo_leave = false;
-				});
-				H5Client.on("stream-subscribed", function(evt) {
-					console.log('获取到视频流');
-					let stream = evt.stream;
-					let streamId = String(stream.getId());
-					let streamview = document.getElementById("subremoteContainer");
-					streamview.id = streamId;
-					document.getElementById("remoteContainer").appendChild(streamview);
-					stream.play(streamId);
-				});
-				H5Client.on("stream-removed", function(evt) {
-					//_this.zhibo_leave = true;
-					//let stream = evt.stream;
-					// let streamId = String(stream.getId());
-					//	stream.close();
-					// removeVideoStream(streamId);
-				});
-				H5Client.on("peer-leave", function(evt) {
-					_this.zhibo_leave = true;
-					let stream = evt.stream;
-					let streamId = String(stream.getId());
-					stream.close();
-					removeVideoStream(streamId);
-				});
-				// #endif
-			},
-			// 进入直播
-			liveLive(liveuid, courseid, lessonid) {
-				var _this = this;
-				let gData = app.globalData;
-				_this.agorauid = gData.userinfo.id;
-				uni.request({
-					url: gData.site_url + 'Live.Enter',
-					method: 'POST',
-					data: {
-						'liveuid': liveuid,
-						'courseid': courseid,
-						'lessonid': lessonid,
-						'sharer_id': this.liveInfo.sharer_id,
-						'token': gData.userinfo.token,
-						'uid': gData.userinfo.id,
-					},
-					success: res => {
-						console.log(res)
-						if (res.data.data.code == 700) {
-							this.isLoggedIn = false;
-							uni.navigateTo({
-								url: '../../../pages/login/login',
-								success: res => {},
-								fail: () => {},
-								complete: () => {}
-							});
-							return;
-						}
-						this.isLoggedIn = true;
-						if (res.data.data.code == 0) {
-							this.addNodeListen();
-							this.pull = this.decypt(res.data.data.info[0].pull);
-							this.ppts = res.data.data.info[0].ppts || [];
-							if (this.ppts.length == 0) {
-								this.noppt = true;
-							} else {
-								this.noppt = false;
-							}
-							if (parseInt(res.data.data.info[0].shutup_room) == 1) {
-								this.shut_place = "全体禁言中";
-								this.content = ""
-								this.isshut = true;
-							} else {
-								this.shut_place = "我来说几句～";
-								this.content = '';
-								this.isshut = false;
-							}
-							this.pptindex = parseInt(res.data.data.info[0].pptindex);
-							this.showppt_index = this.pptindex + 1;
-							if (res.data.data.info && Array.isArray(res.data.data.info) && res.data.data.info[0]) {
-							    this.userInfo.user_type = res.data.data.info[0].user_type || ''; // 添加默认值
-							} else {
-							    console.error('接口返回数据异常:', res.data.data.info);
-							    this.userInfo.user_type = ''; // 设置默认值
-							}
-							let isLive = res.data.data.info[0].islive;
-							if (isLive == 0) {
-								this.shownothingVideo = true;
-								this.islive = '未开始';
-								this.diancolor = '#969696';
-							} else if (isLive == 1) {
-								this.shownothingVideo = false;
-								this.islive = '直播中';
-								this.diancolor = '#2C62EF';
-							} else {
-								this.islive = '已结束';
-								this.zhibo_leave = true;
-								this.show_nothing_image = false;
-								this.show_nothing_image2 = true;
-								this.zhibo_leave_text = '直播已结束';
-								this.zhibo_leave_text_w = "";
-								this.diancolor = '#969696';
-							}
-							this.intr = res.data.data.info[0].intr;
-							//1图文2视频3音频 4ppt直播 5视频直播6音频直播 7授课直播（白板）
-							this.livetype = res.data.data.info[0].livetype;
-							if (this.livetype == 3 || this.livetype == 6) {
-								this.videoContext = uni.createVideoContext('myVideo');
-								this.buttonimage = '../../../staticvoice2.png';
-							}
-							this.Usercount = parseInt(res.data.data.info[0].nums);
-							this.agoraappid = res.data.data.info[0].sound_appid;
-							this.agoramRoomName = res.data.data.info[0].stream;
-
-							if (this.livetype == 5 || this.livetype == 8) {
-								if (this.livemode == 0) {
-									console.log('直播模式');
-									this.livetype = 5;
-									this.fromPPt = false;
-									this.fromshare = false;
-									this.showsmallvideo = false;
-									// #ifdef H5
-									this.showBigScreen = true;
-									this.showShareScreen = false;
-									// #endif
-								} else if (this.livemode == 1) {
-									console.log('PPt模式');
-									this.livetype = 4;
-									this.fromPPt = true;
-									this.fromshare = false;
-									this.showsmallvideo = true;
-									this.scrollH -= 150;
-									// #ifdef H5
-									this.showBigScreen = false;
-									this.showShareScreen = false;
-									// #endif
-								} else if (this.livemode == 2) {
-									console.log('屏幕共享模式');
-									this.livetype = 8;
-									this.fromshare = true;
-									this.showsmallvideo = false;
-									// #ifdef H5
-									this.showShareScreen = true;
-									this.showBigScreen = false;
-									// #endif
-								}
-								if (this.phonetype == 2) {
-									setTimeout(() => {
-										this.$nextTick(() => {
-											this.$refs.videoIos.focus({
-												'appid': this.agoraappid,
-												'mRoomName': this.agoramRoomName,
-												'uid': gData.userinfo.id
-											});
-										});
-									}, 0);
-								} else if (this.phonetype == 1) {
-									setTimeout(() => {
-										this.$nextTick(() => {
-											this.$refs.videoAdnroid.clearTel(
-												this.agoraappid + '声' + this
-												.agoramRoomName + '网' + gData.userinfo.id
-											);
-										});
-									}, 0);
-								} else if (this.phonetype == 3) {
-									this.agoraH5(this.agoraappid, this.agoramRoomName);
-								} else if (this.phonetype == 4) {
-									this.agoraWechat(this.agoraappid, this.agoramRoomName, gData.userinfo.id)
-								}
-							}
-
+			H5Client.on("stream-added", function (evt) {
+				H5Client.subscribe(evt.stream, null);
+				_this.zhibo_leave = false;
+			});
+			H5Client.on("stream-subscribed", function (evt) {
+				console.log('获取到视频流');
+				let stream = evt.stream;
+				let streamId = String(stream.getId());
+				let streamview = document.getElementById("subremoteContainer");
+				streamview.id = streamId;
+				document.getElementById("remoteContainer").appendChild(streamview);
+				stream.play(streamId);
+			});
+			H5Client.on("stream-removed", function (evt) {
+				//_this.zhibo_leave = true;
+				//let stream = evt.stream;
+				// let streamId = String(stream.getId());
+				//	stream.close();
+				// removeVideoStream(streamId);
+			});
+			H5Client.on("peer-leave", function (evt) {
+				_this.zhibo_leave = true;
+				let stream = evt.stream;
+				let streamId = String(stream.getId());
+				stream.close();
+				removeVideoStream(streamId);
+			});
+			// #endif
+		},
+		// 进入直播
+		liveLive(liveuid, courseid, lessonid) {
+			var _this = this;
+			let gData = app.globalData;
+			_this.agorauid = gData.userinfo.id;
+			uni.request({
+				url: gData.site_url + 'Live.Enter',
+				method: 'POST',
+				data: {
+					'liveuid': liveuid,
+					'courseid': courseid,
+					'lessonid': lessonid,
+					'sharer_id': this.liveInfo.sharer_id,
+					'token': gData.userinfo.token,
+					'uid': gData.userinfo.id,
+				},
+				success: res => {
+					console.log(res)
+					if (res.data.data.code == 700) {
+						this.isLoggedIn = false;
+						uni.navigateTo({
+							url: '../../../pages/login/login',
+							success: res => { },
+							fail: () => { },
+							complete: () => { }
+						});
+						return;
+					}
+					this.isLoggedIn = true;
+					if (res.data.data.code == 0) {
+						this.addNodeListen();
+						this.pull = this.decypt(res.data.data.info[0].pull);
+						this.ppts = res.data.data.info[0].ppts || [];
+						if (this.ppts.length == 0) {
+							this.noppt = true;
 						} else {
-							uni.showToast({
-								title: res.data.data.msg,
-								icon: 'none'
-							});
+							this.noppt = false;
 						}
-					},
-				});
-			},
-			sendvoice() {
-				if (this.isshut == true) {
-					return;
-				}
-				if (this.isvoice == true) {
-					this.isvoice = false;
-					this.chat_voice = "../../../static/chat_voice@3x.png";
-				} else {
-					this.isvoice = true;
-					this.chat_voice = "../../../static/chat_keyboard@3x.png";
-				}
-			},
-			submitemojy() {
-				if (this.isshut == true) {
-					return;
-				}
-				if (this.showemojy == true) {
-					this.showemojy = false;
-					this.inputbuttom = 0;
-				} else {
-					uni.hideKeyboard();
-					this.showemojy = true;
-					this.inputbuttom = 170;
-				}
-			},
-			//发送
-			new_sendemojy(data) {
-				if (this.isshut == true) {
-					return;
-				}
-				this.send();
-				this.showemojy = false;
-				this.inputbuttom = 0;
-			},
-			send(event) {
-				uni.hideKeyboard();
-				this.showemojy = false;
-				if (this.voice_url.length > 1) {} else {
-					if (this.content === '') {
-						return uni.showToast({
-							title: '消息不能为空',
+						if (parseInt(res.data.data.info[0].shutup_room) == 1) {
+							this.shut_place = "全体禁言中";
+							this.content = ""
+							this.isshut = true;
+						} else {
+							this.shut_place = "我来说几句～";
+							this.content = '';
+							this.isshut = false;
+						}
+						this.pptindex = parseInt(res.data.data.info[0].pptindex);
+						this.showppt_index = this.pptindex + 1;
+						if (res.data.data.info && Array.isArray(res.data.data.info) && res.data.data.info[0]) {
+							this.userInfo.user_type = res.data.data.info[0].user_type || ''; // 添加默认值
+						} else {
+							console.error('接口返回数据异常:', res.data.data.info);
+							this.userInfo.user_type = ''; // 设置默认值
+						}
+						let isLive = res.data.data.info[0].islive;
+						if (isLive == 0) {
+							this.shownothingVideo = true;
+							this.islive = '未开始';
+							this.diancolor = '#969696';
+						} else if (isLive == 1) {
+							this.shownothingVideo = false;
+							this.islive = '直播中';
+							this.diancolor = '#2C62EF';
+						} else {
+							this.islive = '已结束';
+							this.zhibo_leave = true;
+							this.show_nothing_image = false;
+							this.show_nothing_image2 = true;
+							this.zhibo_leave_text = '视频已结束';
+							this.zhibo_leave_text_w = "";
+							this.diancolor = '#969696';
+						}
+						this.intr = res.data.data.info[0].intr;
+						//1图文2视频3音频 4ppt直播 5视频直播6音频直播 7授课直播（白板）
+						this.livetype = res.data.data.info[0].livetype;
+						if (this.livetype == 3 || this.livetype == 6) {
+							this.videoContext = uni.createVideoContext('myVideo');
+							this.buttonimage = '../../../staticvoice2.png';
+						}
+						this.Usercount = parseInt(res.data.data.info[0].nums);
+						this.agoraappid = res.data.data.info[0].sound_appid;
+						this.agoramRoomName = res.data.data.info[0].stream;
+
+						if (this.livetype == 5 || this.livetype == 8) {
+							if (this.livemode == 0) {
+								console.log('直播模式');
+								this.livetype = 5;
+								this.fromPPt = false;
+								this.fromshare = false;
+								this.showsmallvideo = false;
+								// #ifdef H5
+								this.showBigScreen = true;
+								this.showShareScreen = false;
+								// #endif
+							} else if (this.livemode == 1) {
+								console.log('PPt模式');
+								this.livetype = 4;
+								this.fromPPt = true;
+								this.fromshare = false;
+								this.showsmallvideo = true;
+								this.scrollH -= 150;
+								// #ifdef H5
+								this.showBigScreen = false;
+								this.showShareScreen = false;
+								// #endif
+							} else if (this.livemode == 2) {
+								console.log('屏幕共享模式');
+								this.livetype = 8;
+								this.fromshare = true;
+								this.showsmallvideo = false;
+								// #ifdef H5
+								this.showShareScreen = true;
+								this.showBigScreen = false;
+								// #endif
+							}
+							if (this.phonetype == 2) {
+								setTimeout(() => {
+									this.$nextTick(() => {
+										this.$refs.videoIos.focus({
+											'appid': this.agoraappid,
+											'mRoomName': this.agoramRoomName,
+											'uid': gData.userinfo.id
+										});
+									});
+								}, 0);
+							} else if (this.phonetype == 1) {
+								setTimeout(() => {
+									this.$nextTick(() => {
+										this.$refs.videoAdnroid.clearTel(
+											this.agoraappid + '声' + this
+												.agoramRoomName + '网' + gData.userinfo.id
+										);
+									});
+								}, 0);
+							} else if (this.phonetype == 3) {
+								this.agoraH5(this.agoraappid, this.agoramRoomName);
+							} else if (this.phonetype == 4) {
+								this.agoraWechat(this.agoraappid, this.agoramRoomName, gData.userinfo.id)
+							}
+						}
+
+					} else {
+						uni.showToast({
+							title: res.data.data.msg,
 							icon: 'none'
 						});
 					}
+				},
+			});
+		},
+		sendvoice() {
+			if (this.isshut == true) {
+				return;
+			}
+			if (this.isvoice == true) {
+				this.isvoice = false;
+				this.chat_voice = "../../../static/chat_voice@3x.png";
+			} else {
+				this.isvoice = true;
+				this.chat_voice = "../../../static/chat_keyboard@3x.png";
+			}
+		},
+		submitemojy() {
+			if (this.isshut == true) {
+				return;
+			}
+			if (this.showemojy == true) {
+				this.showemojy = false;
+				this.inputbuttom = 0;
+			} else {
+				uni.hideKeyboard();
+				this.showemojy = true;
+				this.inputbuttom = 170;
+			}
+		},
+		//发送
+		new_sendemojy(data) {
+			if (this.isshut == true) {
+				return;
+			}
+			this.send();
+			this.showemojy = false;
+			this.inputbuttom = 0;
+		},
+		send(event) {
+			uni.hideKeyboard();
+			this.showemojy = false;
+			if (this.voice_url.length > 1) { } else {
+				if (this.content === '') {
+					return uni.showToast({
+						title: '消息不能为空',
+						icon: 'none'
+					});
 				}
-				this.tabIndex = 1;
-				let status = (this.isQue === true) ? "1" : "0";
-				let gData = app.globalData;
-				// 签名
-				var dic = {
+			}
+			this.tabIndex = 1;
+			let status = (this.isQue === true) ? "1" : "0";
+			let gData = app.globalData;
+			// 签名
+			var dic = {
+				'uid': this.userInfo.id,
+				'liveuid': this.liveInfo.liveuid,
+				'courseid': this.liveInfo.courseid,
+				'lessonid': this.liveInfo.lessonid,
+				'type': this.voice_url.length > 1 ? '1' : '0',
+				'content': this.content,
+				'url': this.voice_url,
+				'user_type': this.userInfo.type,
+			};
+			let sign = this.sort2url(dic);
+			//记录聊天信息
+			uni.request({
+				url: gData.site_url + 'Live.SetChat',
+				method: 'POST',
+				data: {
+					'sign': sign,
 					'uid': this.userInfo.id,
+					'token': this.userInfo.token,
+					'content': this.content,
+					"length": this.voice_length,
+					'status': status,
+					'user_type': this.userInfo.type,
 					'liveuid': this.liveInfo.liveuid,
 					'courseid': this.liveInfo.courseid,
 					'lessonid': this.liveInfo.lessonid,
 					'type': this.voice_url.length > 1 ? '1' : '0',
-					'content': this.content,
-					'url': this.voice_url,
-					'user_type': this.userInfo.type,
-				};
-				let sign = this.sort2url(dic);
-				//记录聊天信息
-				uni.request({
-					url: gData.site_url + 'Live.SetChat',
-					method: 'POST',
-					data: {
-						'sign': sign,
-						'uid': this.userInfo.id,
-						'token': this.userInfo.token,
-						'content': this.content,
-						"length": this.voice_length,
-						'status': status,
-						'user_type': this.userInfo.type,
-						'liveuid': this.liveInfo.liveuid,
-						'courseid': this.liveInfo.courseid,
-						'lessonid': this.liveInfo.lessonid,
-						'type': this.voice_url.length > 1 ? '1' : '0',
-						'url': this.voice_url
-					},
-					success: res => {
-						//	console.log(res);
-						if (res.data.data.code == 0) {
-							//发送消息
-							let obj = {
-								"msg": [{
-									"_method_": "SendMsg",
-									"chatid": res.data.data.info[0].chatid,
-									"action": "1",
-									"token": this.userInfo.token,
-									"uid": this.userInfo.id,
-									"user_nickname": this.userInfo.user_nickname,
-									"avatar": this.userInfo.avatar,
-									"liveuid": this.liveInfo.liveuid,
-									"content": this.content,
-									"url": this.voice_url,
-									"length": this.voice_length,
-									"equipment": "app",
-									"create_time": Math.floor((new Date()).getTime().toString() /
-										1000),
-									"msgtype": 2,
-									"status": status,
-									"type": this.voice_url.length > 1 ? '1' : '0',
-									"user_type": 0,
-									'lessonid': this.liveInfo.lessonid,
-								}],
-								"retcode": "000000",
-								"retmsg": "OK"
-							};
-							socket.emit('broadcast', obj);
-							this.content = '';
-							this.voice_url = '';
-							this.voice_length = '';
-						} else {
-							uni.showToast({
-								title: res.data.data.msg,
-								icon: 'none'
-							});
-						}
-					},
-					fail: () => {
+					'url': this.voice_url
+				},
+				success: res => {
+					//	console.log(res);
+					if (res.data.data.code == 0) {
+						//发送消息
+						let obj = {
+							"msg": [{
+								"_method_": "SendMsg",
+								"chatid": res.data.data.info[0].chatid,
+								"action": "1",
+								"token": this.userInfo.token,
+								"uid": this.userInfo.id,
+								"user_nickname": this.userInfo.user_nickname,
+								"avatar": this.userInfo.avatar,
+								"liveuid": this.liveInfo.liveuid,
+								"content": this.content,
+								"url": this.voice_url,
+								"length": this.voice_length,
+								"equipment": "app",
+								"create_time": Math.floor((new Date()).getTime().toString() /
+									1000),
+								"msgtype": 2,
+								"status": status,
+								"type": this.voice_url.length > 1 ? '1' : '0',
+								"user_type": 0,
+								'lessonid': this.liveInfo.lessonid,
+							}],
+							"retcode": "000000",
+							"retmsg": "OK"
+						};
+						socket.emit('broadcast', obj);
+						this.content = '';
+						this.voice_url = '';
+						this.voice_length = '';
+					} else {
 						uni.showToast({
-							icon: 'none',
-							title: '网络错误'
+							title: res.data.data.msg,
+							icon: 'none'
 						});
-					},
-				});
-			},
-			question(isQue) {
-				if (this.isQue == false) {
-					this.isQue = true;
-				} else {
-					this.isQue = false;
-				}
-			},
-			sort2url(arr1) {
-				var newkey = Object.keys(arr1).sort();
-				var newObj = {};
-				for (var i = 0; i < newkey.length; i++) { //遍历newkey数组
-					newObj[newkey[i]] = arr1[newkey[i]]; //向新创建的对象中按照排好的顺序依次增加键值对
-				}
-				var text = "";
-				for (var index in newObj) {
-					text = text + index + "=" + newObj[index] + "&";
-				}
-				text = text.substr(0, text.length - 1);
-				text += '&' + app.globalData.sign_key;
-
-				return md5_js(text);
-			},
-			setSign(obj) { //排序的函数
-				var str = '';
-				var newkey = Object.keys(obj).sort();
-				//先用Object内置类的keys方法获取要排序对象的属性名，再利用Array原型上的sort方法对获取的属性名进行排序，newkey是一个数组
-				var newObj = {}; //创建一个新的对象，用于存放排好序的键值对
-				for (var i = 0; i < newkey.length; i++) { //遍历newkey数组
-					//newObj[newkey[i]] = obj[newkey[i]];//向新创建的对象中按照排好的顺序依次增加键值对
-					str += newkey[i] + '=' + obj[newkey[i]] + '&';
-				}
-				str += app.globalData.sign_key;
-				var sign = md5_js.hex_md5(str);
-				return sign;
-			},
-			pageToBottom() {
-				let lastIndex = this.list.length - 1;
-				if (lastIndex < 0) {
-					return;
-				}
-				var _this = this;
-				setTimeout(() => {
-					_this.scrollInto = 'chat' + lastIndex;
-				}, 200);
-			},
-			// 新增：处理video错误事件，防止报错
-			onVideoError(e) {
-				console.error('视频播放出错', e);
-				this.showEndScreen = true;
-				this.stopWatchTimer();
-				uni.showToast({
-					title: '视频播放出错',
-					icon: 'none'
-				});
-			},
-			onLike() {
-				uni.showToast({
-					title: '点赞成功',
-					icon: 'none'
-				});
-			},
-			onFav() {
-				uni.showToast({
-					title: '已收藏',
-					icon: 'none'
-				});
+					}
+				},
+				fail: () => {
+					uni.showToast({
+						icon: 'none',
+						title: '网络错误'
+					});
+				},
+			});
+		},
+		question(isQue) {
+			if (this.isQue == false) {
+				this.isQue = true;
+			} else {
+				this.isQue = false;
 			}
 		},
-		beforeDestroy() {
-			this.stopWatchTimer(); // 清理计时器
-			socket.disconnect(); // 示例：同时关闭WebSocket
+		sort2url(arr1) {
+			var newkey = Object.keys(arr1).sort();
+			var newObj = {};
+			for (var i = 0; i < newkey.length; i++) { //遍历newkey数组
+				newObj[newkey[i]] = arr1[newkey[i]]; //向新创建的对象中按照排好的顺序依次增加键值对
+			}
+			var text = "";
+			for (var index in newObj) {
+				text = text + index + "=" + newObj[index] + "&";
+			}
+			text = text.substr(0, text.length - 1);
+			text += '&' + app.globalData.sign_key;
+
+			return md5_js(text);
+		},
+		setSign(obj) { //排序的函数
+			var str = '';
+			var newkey = Object.keys(obj).sort();
+			//先用Object内置类的keys方法获取要排序对象的属性名，再利用Array原型上的sort方法对获取的属性名进行排序，newkey是一个数组
+			var newObj = {}; //创建一个新的对象，用于存放排好序的键值对
+			for (var i = 0; i < newkey.length; i++) { //遍历newkey数组
+				//newObj[newkey[i]] = obj[newkey[i]];//向新创建的对象中按照排好的顺序依次增加键值对
+				str += newkey[i] + '=' + obj[newkey[i]] + '&';
+			}
+			str += app.globalData.sign_key;
+			var sign = md5_js.hex_md5(str);
+			return sign;
+		},
+		pageToBottom() {
+			let lastIndex = this.list.length - 1;
+			if (lastIndex < 0) {
+				return;
+			}
+			var _this = this;
+			setTimeout(() => {
+				_this.scrollInto = 'chat' + lastIndex;
+			}, 200);
+		},
+		// 新增：处理video错误事件，防止报错
+		onVideoError(e) {
+			console.error('视频播放出错', e);
+			this.showEndScreen = true;
+			this.stopWatchTimer();
+			uni.showToast({
+				title: '视频播放出错',
+				icon: 'none'
+			});
+		},
+		onLike() {
+			uni.showToast({
+				title: '点赞成功',
+				icon: 'none'
+			});
+		},
+		onFav() {
+			uni.showToast({
+				title: '已收藏',
+				icon: 'none'
+			});
+		},
+		onTimeUpdate(e) {
+			this.currentTime = (e.detail && e.detail.currentTime) || 0;
+			console.log('当前播放时间:', this.currentTime, 'duration:', this.duration);
+		},
+		onLoadedMetadata(e) {
+			this.duration = (e.detail && e.detail.duration) || 0;
+			console.log('视频总时长:', this.duration, '当前播放时间:', this.currentTime);
+		},
+		onSliderDragStart(e) {
+			this.sliderDragging = true;
+			this.updateSlider(e);
+			// #ifdef H5
+			document.addEventListener('mousemove', this.onSliderMove, { passive: false });
+			document.addEventListener('mouseup', this.onSliderUp, { passive: false });
+			document.addEventListener('touchmove', this.onSliderMove, { passive: false });
+			document.addEventListener('touchend', this.onSliderUp, { passive: false });
+			// #endif
+		},
+		onSliderMove(e) {
+			if (!this.sliderDragging) return;
+			e.preventDefault && e.preventDefault();
+			this.updateSlider(e);
+		},
+		onSliderUp(e) {
+			if (!this.sliderDragging) return;
+			this.sliderDragging = false;
+			this.updateSlider(e, true);
+			document.removeEventListener('mousemove', this.onSliderMove);
+			document.removeEventListener('mouseup', this.onSliderUp);
+			document.removeEventListener('touchmove', this.onSliderMove);
+			document.removeEventListener('touchend', this.onSliderUp);
+		},
+		updateSlider(e, commit = false) {
+			let clientX;
+			if (e && e.touches && e.touches.length) {
+				clientX = e.touches[0].clientX;
+			} else if (e && typeof e.clientX === 'number') {
+				clientX = e.clientX;
+			} else if (e && e.changedTouches && e.changedTouches.length) {
+				clientX = e.changedTouches[0].clientX;
+			} else {
+				console.log('updateSlider: 无法获取 clientX', e);
+				return;
+			}
+			let bar = this.$refs.progressBg;
+			if (Array.isArray(bar)) bar = bar[0];
+			if (!bar) {
+				console.log('updateSlider: 进度条 DOM 未获取到');
+				return;
+			}
+			const rect = bar.getBoundingClientRect();
+			let percent = ((clientX - rect.left) / rect.width) * 100;
+			percent = Math.max(0, Math.min(100, percent));
+			this.sliderProgress = percent;
+			this.sliderTime = (this.duration || 0) * percent / 100;
+			console.log('updateSlider:', { clientX, percent, sliderProgress: this.sliderProgress, sliderTime: this.sliderTime, duration: this.duration });
+			if (commit) {
+				this.currentTime = this.sliderTime;
+				// #ifdef H5
+				const video = document.getElementById('liveVideo');
+				if (video) video.currentTime = this.sliderTime;
+				// #endif
+				// #ifdef MP-WEIXIN || APP-PLUS
+				const videoContext = uni.createVideoContext('liveVideo', this);
+				videoContext.seek(this.sliderTime);
+				// #endif
+			}
 		}
+	},
+	beforeDestroy() {
+		this.stopWatchTimer(); // 清理计时器
+		socket.disconnect(); // 示例：同时关闭WebSocket
+	},
+	computed: {
+		showBackBtn() {
+			return this.userInfo.type !== 0 && this.userInfo.type !== '0';
+		},
+		currentTimeStr() {
+			const t = Math.floor(this.currentTime || 0);
+			const m = String(Math.floor(t / 60)).padStart(2, '0');
+			const s = String(t % 60).padStart(2, '0');
+			return `${m}:${s}`;
+		},
+		durationStr() {
+			const t = Math.floor(this.duration || 0);
+			const m = String(Math.floor(t / 60)).padStart(2, '0');
+			const s = String(t % 60).padStart(2, '0');
+			return `${m}:${s}`;
+		},
+		sliderTimeStr() {
+			const t = Math.floor(this.sliderTime || 0);
+			const m = String(Math.floor(t / 60)).padStart(2, '0');
+			const s = String(t % 60).padStart(2, '0');
+			return `${m}:${s}`;
+		},
+		progress() {
+			if (!this.duration) return 0;
+			const p = (this.currentTime / this.duration) * 100;
+			console.log('progress:', p, 'currentTime:', this.currentTime, 'duration:', this.duration);
+			return p;
+		},
 	}
+}
 </script>
 <style>
-	@import url("/static/css/infoplay.css");
+@import url("/static/css/infoplay.css");
 
-	/* 下面的 /deep/ 选择器可能导致 linter 报错，注释或移除以修复错误 */
-	/*
+/* 下面的 /deep/ 选择器可能导致 linter 报错，注释或移除以修复错误 */
+/*
 	/deep/.uni-scroll-view ::-webkit-scrollbar {
 		display: none;
 		width: 0;
@@ -1727,198 +1800,364 @@
 	}
 */
 
-	/* 视频容器 */
+/* 视频容器 */
+.video-container {
+	position: relative;
+	width: 100vw;
+	height: 100vh;
+	/* 高度为100vh，确保视频容器占满整个屏幕 */
+	background-color: #000;
+	/* 背景设置为黑色 */
+	display: flex;
+	justify-content: center;
+	/* 水平居中 */
+	align-items: center;
+	/* 垂直居中 */
+	overflow: hidden;
+	/* 防止视频超出容器 */
+}
+
+/* 视频元素 */
+.video-element {
+	width: 100%;
+	height: 100%;
+	max-width: 100%;
+	/* 最大宽度为100% */
+	max-height: 100%;
+	/* 最大高度为100% */
+	object-fit: contain;
+	/* 保持视频的比例 */
+}
+
+/* 遮罩层，用于覆盖水印 */
+.video-mask {
+	position: absolute;
+	top: 80%;
+	/* 水印的位置调整，假设水印在底部 */
+	left: 80%;
+	/* 水印位置 */
+	width: 20%;
+	/* 水印区域的宽度 */
+	height: 10%;
+	/* 水印区域的高度 */
+	background-color: rgba(0, 0, 0, 0.5);
+	/* 半透明的遮罩层，颜色可以调整 */
+	z-index: 5;
+	/* 确保遮罩层位于视频层上 */
+}
+
+/* 关注按钮 */
+.tiktok-follow-btn {
+	position: absolute;
+	top: 50%;
+	/* 距离顶部20px */
+	right: 5px;
+	/* 距离右侧20px */
+	background: linear-gradient(90deg, #ff2676, #ff6034);
+	color: #fff;
+	border-radius: 30rpx;
+	padding: 8rpx 28rpx;
+	font-size: 26rpx;
+	z-index: 10;
+	/* 确保按钮位于视频上层 */
+}
+
+/* 横屏模式下适配 */
+@media screen and (orientation: landscape) {
 	.video-container {
-	    position: relative;
-	    width: 100vw;
-	    height: 100vh; /* 高度为100vh，确保视频容器占满整个屏幕 */
-	    background-color: #000; /* 背景设置为黑色 */
-	    display: flex;
-	    justify-content: center; /* 水平居中 */
-	    align-items: center; /* 垂直居中 */
-	    overflow: hidden; /* 防止视频超出容器 */
+		height: 100vh;
+		/* 横屏模式下占满屏幕高度 */
+		width: 100vw;
+		/* 宽度自适应 */
 	}
-	
-	/* 视频元素 */
+
 	.video-element {
-	    width: 100%;
-	    height: 100%;
-	    max-width: 100%; /* 最大宽度为100% */
-	    max-height: 100%; /* 最大高度为100% */
-	    object-fit: contain; /* 保持视频的比例 */
+		width: auto;
+		/* 宽度自适应 */
+		height: 100%;
+		/* 高度填满容器 */
 	}
-	
-	/* 遮罩层，用于覆盖水印 */
-	.video-mask {
-	    position: absolute;
-	    top: 80%; /* 水印的位置调整，假设水印在底部 */
-	    left: 80%; /* 水印位置 */
-	    width: 20%; /* 水印区域的宽度 */
-	    height: 10%; /* 水印区域的高度 */
-	    background-color: rgba(0, 0, 0, 0.5); /* 半透明的遮罩层，颜色可以调整 */
-	    z-index: 5; /* 确保遮罩层位于视频层上 */
-	}
-	
-	/* 关注按钮 */
-	.tiktok-follow-btn {
-	    position: absolute;
-	    top: 50%; /* 距离顶部20px */
-	    right: 5px; /* 距离右侧20px */
-	    background: linear-gradient(90deg, #ff2676, #ff6034);
-	    color: #fff;
-	    border-radius: 30rpx;
-	    padding: 8rpx 28rpx;
-	    font-size: 26rpx;
-	    z-index: 10; /* 确保按钮位于视频上层 */
-	}
-	
-	/* 横屏模式下适配 */
-	@media screen and (orientation: landscape) {
-	    .video-container {
-	        height: 100vh; /* 横屏模式下占满屏幕高度 */
-	        width: 100vw; /* 宽度自适应 */
-	    }
-	    .video-element {
-	        width: auto; /* 宽度自适应 */
-	        height: 100%; /* 高度填满容器 */
-	    }
-	}
+}
 
-	/* 直播视频全屏 */
-	.live-all-wrap {
-		position: relative;
-		width: 100vw;
-		height: 100vh;
-		background: #000;
-		overflow: hidden;
-	}
+/* 直播视频全屏 */
+.live-all-wrap {
+	position: relative;
+	width: 100vw;
+	height: 100vh;
+	background: #000;
+	overflow: hidden;
+}
 
-	/* 视频区全屏显示 */
-	.video-wrap,
-	.video-share-wrap,
-	.video-small-wrap {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		width: 100vw;
-		height: 100vh;
-		z-index: 1;
-		background: #000;
-	}
+/* 视频区全屏显示 */
+.video-wrap,
+.video-share-wrap,
+.video-small-wrap {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 1;
+	background: #000;
+}
 
-	/* 右侧操作按钮区 */
-	.tiktok-actions {
-		position: absolute;
-		right: 20rpx;
-		bottom: 200rpx;
-		z-index: 10;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
+/* 右侧操作按钮区 */
+.tiktok-actions {
+	position: absolute;
+	right: 20rpx;
+	bottom: 200rpx;
+	z-index: 10;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
 
-	.tiktok-action-btn {
-		margin-bottom: 40rpx;
-		width: 80rpx;
-		height: 80rpx;
-		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.15);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: #fff;
-		font-size: 40rpx;
-	}
+.tiktok-action-btn {
+	margin-bottom: 40rpx;
+	width: 80rpx;
+	height: 80rpx;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.15);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	font-size: 40rpx;
+}
 
-	/* 底部评论输入区悬浮 */
-	.inputbottom {
-		position: absolute !important;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		z-index: 20;
-		background: rgba(0, 0, 0, 0.5);
-		padding-bottom: env(safe-area-inset-bottom);
-	}
+/* 底部评论输入区悬浮 */
+.inputbottom {
+	position: absolute !important;
+	left: 0;
+	right: 0;
+	bottom: 60px;
+	z-index: 20;
+	background: rgba(0, 0, 0, 0.5);
+	padding-bottom: env(safe-area-inset-bottom);
+}
 
-	/* 评论区悬浮在底部上方 */
-	.tiktok-comments {
-		position: absolute;
-		left: 0;
-		right: 0;
-		bottom: 120rpx;
-		z-index: 15;
-		max-height: 40vh;
-		overflow-y: auto;
-		padding: 0 20rpx;
-		color: #fff;
-		font-size: 28rpx;
-		pointer-events: none;
-		/* 不影响底部输入 */
-	}
+/* 评论区悬浮在底部上方 */
+.tiktok-comments {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 120rpx;
+	z-index: 15;
+	max-height: 40vh;
+	overflow-y: auto;
+	padding: 0 20rpx;
+	color: #fff;
+	font-size: 28rpx;
+	pointer-events: none;
+	/* 不影响底部输入 */
+}
 
-	/* 顶部主播信息栏 */
-	.tiktok-topbar {
-		position: absolute;
-		top: 33%;
-		left: 5rpx;
-		right: 5rpx;
-		z-index: 30;
-		display: flex;
-		align-items: center;
+/* 顶部主播信息栏 */
+.tiktok-topbar {
+	position: absolute;
+	top: 33%;
+	left: 5rpx;
+	right: 5rpx;
+	z-index: 30;
+	display: flex;
+	align-items: center;
 	/*	background: rgba(0, 0, 0, 0.2);
 		border-radius: 40rpx;*/
-		padding: 10rpx 10rpx;
-	}
+	padding: 10rpx 10rpx;
+}
 
-	.tiktok-avatar {
-		width: 60rpx;
-		height: 60rpx;
-		border-radius: 50%;
-		margin-right: 16rpx;
-	}
+.tiktok-avatar {
+	width: 60rpx;
+	height: 60rpx;
+	border-radius: 50%;
+	margin-right: 16rpx;
+}
 
-	.tiktok-anchor-info {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		color: #fff;
-		font-size: 24rpx;
-	}
+.tiktok-anchor-info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	color: #fff;
+	font-size: 24rpx;
+}
 
-	.tiktok-anchor-name {
-		font-weight: bold;
-	}
+.tiktok-anchor-name {
+	font-weight: bold;
+}
 
-	.tiktok-anchor-stats {
-		font-size: 20rpx;
-		opacity: 0.8;
-	}
+.tiktok-anchor-stats {
+	font-size: 20rpx;
+	opacity: 0.8;
+}
 
-	.input-action-group {
-		position: absolute;
-		right: 20rpx;
-		bottom: 180rpx;
-		/* 向上移动，避免与emojy按钮重叠 */
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		z-index: 100;
-	}
+.input-action-group {
+	position: absolute;
+	right: 20rpx;
+	bottom: 300rpx;
+	/* 向上移动，避免与emojy按钮重叠 */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	/* z-index: 100; */
+}
 
-	.input-action-group .like-btn,
-	.input-action-group .fav-btn {
-		width: 60rpx;
-		height: 60rpx;
-		margin-bottom: 20rpx;
-		background: #fff;
-		border-radius: 50%;
-		box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
-	}
-	.end-screen{
-		color: #fff;
-		font-size: 26rpx;
-	}
+.input-action-group .like-btn,
+.input-action-group .fav-btn {
+	width: 60rpx;
+	height: 60rpx;
+	margin-bottom: 20rpx;
+	background: #fff;
+	border-radius: 50%;
+	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.end-screen {
+	color: #fff;
+	font-size: 26rpx;
+}
+
+.custom-back-btn {
+	position: absolute;
+	top: 30rpx;
+	left: 20rpx;
+	z-index: 1000;
+	width: 60rpx;
+	height: 60rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 50%;
+}
+
+.custom-back-img {
+	width: 40rpx;
+	height: 40rpx;
+}
+
+.bottom-progress-bar {
+	position: fixed;
+	left: 0;
+	bottom: 100rpx;
+	width: 100vw;
+	z-index: 9999;
+	background: transparent;
+	padding-bottom: env(safe-area-inset-bottom);
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	height: 300px;
+	align-items: center;
+}
+
+.bottom-progress-bar>uni-progress,
+.bottom-progress-bar>.uni-progress {
+	border: 3rpx solid #fff;
+	border-radius: 20rpx;
+	box-sizing: border-box;
+	background: #ffe066;
+}
+
+.video-back-btn {
+	position: absolute;
+	top: 30rpx;
+	left: 20rpx;
+	z-index: 2000;
+}
+
+.custom-horizontal-progress-bar {
+	position: fixed;
+	left: 0;
+	bottom: 160rpx;
+	width: 100vw;
+	z-index: 9999;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 16rpx;
+}
+
+.custom-horizontal-progress-bg {
+	position: relative;
+	width: 90vw;
+	max-width: 600px;
+	height: 8px;
+	background: #e5eaf3;
+	border-radius: 4px;
+	overflow: visible;
+	margin: 0 12rpx;
+	flex-shrink: 0;
+}
+
+.custom-horizontal-progress-inner {
+	height: 100%;
+	background: #2196f3;
+	border-radius: 4px 0 0 4px;
+	transition: width 0.3s;
+}
+
+.custom-progress-time {
+	color: #333;
+	font-size: 24rpx;
+	min-width: 60rpx;
+	text-align: center;
+}
+
+.custom-progress-slider {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	transform: translate(-12px, -50%);
+	width: 24px;
+	height: 24px;
+	background: #fff;
+	border: 2px solid #2196f3;
+	border-radius: 50%;
+	box-shadow: 0 2px 8px rgba(33, 150, 243, 0.15);
+	z-index: 2;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.custom-progress-bubble {
+	position: absolute;
+	left: 50%;
+	top: -38px;
+	transform: translate(-50%, 0);
+	background: #222;
+	color: #fff;
+	font-size: 20rpx;
+	padding: 4px 10px;
+	border-radius: 6px;
+	white-space: nowrap;
+	z-index: 3;
+}
+
+.custom-progress-bubble::after {
+	content: '';
+	position: absolute;
+	left: 50%;
+	top: 100%;
+	transform: translateX(-50%);
+	border-width: 6px;
+	border-style: solid;
+	border-color: #222 transparent transparent transparent;
+}
+
+.progress-time-bar {
+  width: 90vw;
+  max-width: 600px;
+  margin: 2px auto 0 auto;
+  text-align: right;
+  color: #333;
+  font-size: 24rpx;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: visible;
+}
 </style>
