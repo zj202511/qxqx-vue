@@ -96,7 +96,7 @@
 								<!-- 未登录用户 -->
 								<button v-else class="share-button" @tap="goToLogin">
 									<text class="iconfont icon-fenxiang"></text>
-									<text>登录分享</text>
+									<text>登录观看</text>
 								</button>
 							</view>
 						</view>

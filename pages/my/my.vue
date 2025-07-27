@@ -120,7 +120,7 @@
 		<!-- 点击列表页 -->
 		<!-- 功能入口 -->
 		<view class="grid">
-			<view v-for="(item, index) in menu" :key="index" class="grid-item" @click="onMenuClick(item)">
+			<view v-for="(item, index) in fullMenu" :key="index" class="grid-item" @click="onMenuClick(item)">
 				<image :src="item.icon" class="grid-icon" />
 				<view class="grid-label">{{ item.label }}</view>
 				<view v-if="item.badge" class="badge">{{ item.badge }}</view>
@@ -289,6 +289,20 @@
 		methods: {
 			// 功能
 			onMenuClick(item) {
+
+				const needLoginKeys = ['record', 'hasbuy'];
+
+				if (needLoginKeys.includes(item.key)) {
+					if (!app.globalData.userinfo || !app.globalData.userinfo.id) {
+						uni.showToast({
+							title: '请先登录',
+							icon: 'none',
+							duration: 2000
+						});
+						return;
+					}
+				}
+
 				if (item.url) {
 					uni.navigateTo({
 						url: item.url
@@ -434,7 +448,8 @@
 					//关于我们
 					uni.navigateTo({
 
-						url: '../about/about?url=' + encodeURIComponent(JSON.stringify(urls)) + '&title=' + '关于我们',
+						url: '../about/about?url=' + encodeURIComponent(JSON.stringify(urls)) + '&title=' +
+							'关于我们',
 					});
 				} else if (ID == 6) {
 					//设置
