@@ -454,9 +454,47 @@ export default {
 	onUnload() {
 		this.submitWatchDuration();
 		this.stopWatchTimer();
-		this.chat_audio.stop();
-		socket.disconnect();
-		socket.close();
+		
+		// 停止音频播放
+		if (this.chat_audio) {
+			this.chat_audio.stop();
+		}
+		
+		// 安全地关闭socket连接
+		if (socket && typeof socket.disconnect === 'function') {
+			try {
+				socket.disconnect();
+			} catch (e) {
+				console.log('socket disconnect error:', e);
+			}
+		}
+		if (socket && typeof socket.close === 'function') {
+			try {
+				socket.close();
+			} catch (e) {
+				console.log('socket close error:', e);
+			}
+		}
+		
+		// 清理定时器
+		if (this.voiceInterval) {
+			clearInterval(this.voiceInterval);
+		}
+		if (this.intervl) {
+			clearInterval(this.intervl);
+		}
+		
+		// 清理全局事件监听器
+		// #ifdef H5
+		try {
+			document.removeEventListener('mousemove', this.onSliderMove);
+			document.removeEventListener('mouseup', this.onSliderUp);
+			document.removeEventListener('touchmove', this.onSliderMove);
+			document.removeEventListener('touchend', this.onSliderUp);
+		} catch (e) {
+			console.log('removeEventListener error:', e);
+		}
+		// #endif
 	},
 	onHide() {
 		this.submitWatchDuration();
@@ -880,17 +918,55 @@ export default {
 				confirmColor: '#2C62EF',
 				success: res => {
 					if (res.confirm) {
-						// uni.showLoading({
-						// 	title:null
-						// })
-						socket.disconnect();
-						socket.close();
-						setTimeout(() => {
-							uni.hideLoading();
-							uni.navigateBack({
-								delta: 1
-							});
-						}, 0);
+						// 停止观看计时
+						this.submitWatchDuration();
+						this.stopWatchTimer();
+						
+						// 停止音频播放
+						if (this.chat_audio) {
+							this.chat_audio.stop();
+						}
+						
+						// 安全地关闭socket连接
+						if (socket && typeof socket.disconnect === 'function') {
+							try {
+								socket.disconnect();
+							} catch (e) {
+								console.log('socket disconnect error:', e);
+							}
+						}
+						if (socket && typeof socket.close === 'function') {
+							try {
+								socket.close();
+							} catch (e) {
+								console.log('socket close error:', e);
+							}
+						}
+						
+						// 清理定时器
+						if (this.voiceInterval) {
+							clearInterval(this.voiceInterval);
+						}
+						if (this.intervl) {
+							clearInterval(this.intervl);
+						}
+						
+						// 清理全局事件监听器
+						// #ifdef H5
+						try {
+							document.removeEventListener('mousemove', this.onSliderMove);
+							document.removeEventListener('mouseup', this.onSliderUp);
+							document.removeEventListener('touchmove', this.onSliderMove);
+							document.removeEventListener('touchend', this.onSliderUp);
+						} catch (e) {
+							console.log('removeEventListener error:', e);
+						}
+						// #endif
+						
+						// 立即返回上一页
+						uni.navigateBack({
+							delta: 1
+						});
 					}
 				},
 				fail: () => { },
@@ -1745,7 +1821,40 @@ export default {
 	},
 	beforeDestroy() {
 		this.stopWatchTimer(); // 清理计时器
-		socket.disconnect(); // 示例：同时关闭WebSocket
+		
+		// 停止音频播放
+		if (this.chat_audio) {
+			this.chat_audio.stop();
+		}
+		
+		// 安全地关闭socket连接
+		if (socket && typeof socket.disconnect === 'function') {
+			try {
+				socket.disconnect();
+			} catch (e) {
+				console.log('socket disconnect error:', e);
+			}
+		}
+		
+		// 清理定时器
+		if (this.voiceInterval) {
+			clearInterval(this.voiceInterval);
+		}
+		if (this.intervl) {
+			clearInterval(this.intervl);
+		}
+		
+		// 清理全局事件监听器
+		// #ifdef H5
+		try {
+			document.removeEventListener('mousemove', this.onSliderMove);
+			document.removeEventListener('mouseup', this.onSliderUp);
+			document.removeEventListener('touchmove', this.onSliderMove);
+			document.removeEventListener('touchend', this.onSliderUp);
+		} catch (e) {
+			console.log('removeEventListener error:', e);
+		}
+		// #endif
 	},
 	computed: {
 		showBackBtn() {

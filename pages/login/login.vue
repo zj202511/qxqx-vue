@@ -34,7 +34,8 @@
 				avatarUrl: '',
 				nickname: '',
 				isLoading: false,
-				openid: ''
+				openid: '',
+				tempAvatarPath: '' // 添加临时头像路径
 			};
 		},
 		onLoad() {
@@ -56,8 +57,26 @@
 		},
 		methods: {
 			onChooseAvatar(e) {
+				console.log('选择头像事件:', e.detail);
+				console.log('原始头像URL:', e.detail.avatarUrl);
+				
+				// 微信头像选择返回的是临时文件路径
 				this.tempAvatarPath = e.detail.avatarUrl;
 				this.avatarUrl = e.detail.avatarUrl; // 用于预览
+				console.log('设置临时头像路径:', this.tempAvatarPath);
+				
+				// 验证文件路径
+				if (this.tempAvatarPath) {
+					uni.getFileInfo({
+						filePath: this.tempAvatarPath,
+						success: (res) => {
+							console.log('头像文件信息:', res);
+						},
+						fail: (err) => {
+							console.error('头像文件验证失败:', err);
+						}
+					});
+				}
 			},
 
 			async onLogin() {
@@ -79,18 +98,12 @@
 				});
 
 				try {
-					// 1. 处理头像（微信头像需下载）
-					const isRemote = this.tempAvatarPath.startsWith('http');
-
-					if (isRemote) {
-						console.log('远程头像，准备下载并上传...');
-					} else {
-						console.log('本地头像，直接上传...');
-					}
-
-					const finalAvatarUrl = isRemote ?
-						await this.downloadAndUploadAvatar(this.tempAvatarPath) :
-						await this.uploadAvatar(this.tempAvatarPath);
+					// 1. 处理头像（微信头像选择返回的是临时文件路径）
+					console.log('完整头像路径:', this.tempAvatarPath);
+					
+					// 微信头像选择返回的是临时文件路径，直接上传
+					console.log('微信头像，直接上传...');
+					const finalAvatarUrl = await this.uploadAvatar(this.tempAvatarPath);
 
 					// 2. 获取微信 code → openid
 					const [loginErr, loginRes] = await uni.login({
@@ -146,15 +159,33 @@
 			// 上传本地文件（头像）
 			uploadAvatar(filePath) {
 				console.log('上传本地文件:', filePath);
+				console.log('上传URL:', app.globalData.site_url + 'Login.uploadAvatar');
+				
 				return new Promise((resolve, reject) => {
-					uni.uploadFile({
+					// 检查文件路径是否存在
+					if (!filePath) {
+						reject(new Error('文件路径为空'));
+						return;
+					}
+					
+					const uploadConfig = {
 						url: app.globalData.site_url + 'Login.uploadAvatar',
-						filePath,
+						filePath: filePath,
 						name: 'avatar',
+						formData: {
+							// 可以添加额外的表单数据
+						}
+					};
+					console.log('上传配置:', uploadConfig);
+					
+					uni.uploadFile({
+						...uploadConfig,
 						success: (res) => {
 							console.log('upload success:', res);
+							console.log('响应数据:', res.data);
 							try {
 								const parsed = JSON.parse(res.data);
+								console.log('解析后的数据:', parsed);
 								const data = parsed.data;
 								if (data.code === 0) {
 									resolve(data.url);
@@ -164,6 +195,7 @@
 								}
 							} catch (e) {
 								console.error('上传响应解析失败:', res.data);
+								console.error('解析错误:', e);
 								reject(new Error('服务器响应格式错误'));
 							}
 						},
