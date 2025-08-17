@@ -157,9 +157,6 @@
 		</view> -->
 		<!-- 广告位 -->
 		<view @click="guanggao" class="index-banner-wrap2" style="display: none;">
-
-			<!--	<image class="index-banner-img2"  src="../../static/images/huodong.png" mode="aspectFill"></image>-->
-
 		</view>
 		<view class="animated fast fadeIn userinfo-list" style="display: none;">
 			<view class="p-3">

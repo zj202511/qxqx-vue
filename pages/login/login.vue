@@ -57,14 +57,77 @@
 		},
 		methods: {
 			onChooseAvatar(e) {
+				const avatar = e.detail.avatarUrl;
+				this.avatarUrl = avatar;
+
+				const tempFilePath = avatar;
+				const fs = uni.getFileSystemManager();
+				const targetPath = `${wx.env.USER_DATA_PATH}/avatar_${Date.now()}.jpg`;
+
+				// 判断是否是微信 PC 的特殊路径
+				const isWechatPCPath = tempFilePath.startsWith('wxfile://') || tempFilePath.includes('WeappFileSystem');
+
+				if (isWechatPCPath) {
+					try {
+						// 特殊处理 PC 路径
+						const targetDir = `${wx.env.USER_DATA_PATH}/tmp_avatars`;
+						try {
+							fs.accessSync(targetDir);
+						} catch {
+							fs.mkdirSync(targetDir, true);
+						}
+
+						const finalPath = `${targetDir}/avatar_${Date.now()}.jpg`;
+						fs.copyFileSync(tempFilePath, finalPath);
+						this.tempAvatarPath = finalPath;
+					} catch (err) {
+						console.error('电脑版路径处理失败:', err);
+						this.handleAvatarError(); // 提示用户手动选择
+					}
+				} else {
+					// 普通路径处理
+					fs.copyFile({
+						srcPath: tempFilePath,
+						destPath: targetPath,
+						success: () => {
+							this.tempAvatarPath = targetPath;
+						},
+						fail: (err) => {
+							console.error('拷贝失败:', err);
+							this.handleAvatarError();
+						}
+					});
+				}
+			},
+			handleAvatarError() {
+				uni.showModal({
+					title: '提示',
+					content: '头像路径处理失败，可能是微信电脑版限制，请手动选择图片',
+					success: (res) => {
+						if (res.confirm) {
+							uni.chooseImage({
+								count: 1,
+								success: (chooseRes) => {
+									const filePath = chooseRes.tempFilePaths[0];
+									this.avatarUrl = filePath;
+									this.tempAvatarPath = filePath;
+								}
+							});
+						}
+					}
+				});
+			},
+
+
+			onChooseAvatar12(e) {
 				console.log('选择头像事件:', e.detail);
 				console.log('原始头像URL:', e.detail.avatarUrl);
-				
+
 				// 微信头像选择返回的是临时文件路径
 				this.tempAvatarPath = e.detail.avatarUrl;
 				this.avatarUrl = e.detail.avatarUrl; // 用于预览
 				console.log('设置临时头像路径:', this.tempAvatarPath);
-				
+
 				// 验证文件路径
 				if (this.tempAvatarPath) {
 					uni.getFileInfo({
@@ -100,7 +163,7 @@
 				try {
 					// 1. 处理头像（微信头像选择返回的是临时文件路径）
 					console.log('完整头像路径:', this.tempAvatarPath);
-					
+
 					// 微信头像选择返回的是临时文件路径，直接上传
 					console.log('微信头像，直接上传...');
 					const finalAvatarUrl = await this.uploadAvatar(this.tempAvatarPath);
@@ -158,16 +221,19 @@
 
 			// 上传本地文件（头像）
 			uploadAvatar(filePath) {
+
+
 				console.log('上传本地文件:', filePath);
 				console.log('上传URL:', app.globalData.site_url + 'Login.uploadAvatar');
-				
+
 				return new Promise((resolve, reject) => {
+
 					// 检查文件路径是否存在
 					if (!filePath) {
 						reject(new Error('文件路径为空'));
 						return;
 					}
-					
+
 					const uploadConfig = {
 						url: app.globalData.site_url + 'Login.uploadAvatar',
 						filePath: filePath,
@@ -177,7 +243,7 @@
 						}
 					};
 					console.log('上传配置:', uploadConfig);
-					
+
 					uni.uploadFile({
 						...uploadConfig,
 						success: (res) => {
@@ -315,7 +381,7 @@
 			goBack() {
 				uni.navigateBack({
 					delta: 1
-				}); 
+				});
 			},
 			sort2url(params) {
 				const keys = Object.keys(params).sort();

@@ -308,6 +308,7 @@
 							return;
 						}
 						if (res.data.data.code != 0) {
+							uni.showToast({ title: res.data.data.msg, icon: 'none' });
 							uni.navigateTo({ url: '../../../pages/login/login' });
 							return;
 						}
